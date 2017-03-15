@@ -1,96 +1,56 @@
 package recipeTool;
-import java.text.ParseException;
+
 import java.util.*;
+import java.util.Map.Entry;
+
 public class Recipe {
-
-	private static ArrayList<String> names = new ArrayList<String>();
-	private static HashMap<String, HashMap<String, Double>> ingredients = new HashMap<String, HashMap<String, Double>>();
-	private static HashMap<String, ArrayList<String>> allergens = new HashMap<String, ArrayList<String>>();
-	private static HashMap<String, Date> expiration = new HashMap<String, Date>();
-	private static HashMap<String, String> instruction = new HashMap<String, String>();
-	private static HashMap<String, Boolean> enough = new HashMap<String, Boolean>();
 	
-	//READ
-	public static ArrayList<String> getNames(String name){
-		return names;
-	}
-	public static HashMap<String, Double> getIngredients(String name){
-		return ingredients.get(name);
-	}
-	public static ArrayList<String> getAllergens(String name){
-		return allergens.get(name);
-	}
-	public static Date getExpiration(String name){
-		return expiration.get(name);
-	}
-	public static String getInstruction(String name){
-		return instruction.get(name);
-	}
-	public static boolean getEnough(String name){
-		return enough.get(name);
-	}
+	//PROPERTIES
+	private String name;
+	private String instruction;
+	private HashMap<Ingredient, Double> ingredients;
 	
-	//CREATE & UPDATE
-	public static void setIngredients(String name, HashMap<String, Double> x){
-		ingredients.put(name, x);
-		if (!names.contains(name)){
-			names.add(name);
-			allergens.put(name, new ArrayList<String>());
+	//SETTERS
+	public void setName(String name){}
+	public void setInstruction(String instruction){}
+	public void setIngredient(Ingredient ingredient, double amount){}
+	
+	//GETTERS
+	public String getName(){
+		return name;
+	}
+	public String getInstruction(){
+		return instruction;
+	}
+	public HashMap<Ingredient, Double> getIngredients(){
+		return ingredients;
+	}
+	public Date getExpiration(){
+		Calendar temp = Calendar.getInstance();
+		temp.add(Calendar.YEAR, 100);
+		Date expiration = temp.getTime();
+		
+		Iterator<Entry<Ingredient, Double>> iter = ingredients.entrySet().iterator();
+		while (iter.hasNext()){
+			Date compare = iter.next().getKey().getExpiration();
+			if (compare.before(expiration)) compare = expiration;
 		}
+		return expiration;
 	}
-	public static void setInstruction(String name, String x){
-		instruction.put(name, x);
-	}
-	private static void setExpiration(String name, Date x){
-		expiration.put(name, x);
-	}
-	private static void addAllergens(String name, ArrayList<String> x){
-		allergens.get(name).addAll(x);
-	}
-	public static void update(String name) throws ParseException{
-		boolean y = true;
-		Calendar comparison = Calendar.getInstance();
-		comparison.add(Calendar.YEAR, 100);
-		Date compare = comparison.getTime();
-		setExpiration(name, compare);
-
-		
-		
-		Iterator<String> iter = ingredients.get(name).keySet().iterator();
-		while (iter.hasNext()) {
-			String x = iter.next();
-			
-			if(getIngredients(name).get(x) > Ingredient.getAmount(x)) y = false; //enough ingredients
-			
-			
-			if(getExpiration(name).after(Ingredient.getExpiration(x))) setExpiration(name, Ingredient.getExpiration(x)); //soonest expiry?
-			
-			addAllergens(name, Ingredient.getAllergens(x)); //add allergens from each ingredient into recipe
-
+	public ArrayList<String> getAllergens(){
+		ArrayList<String> allergens = new ArrayList<String>();
+		Iterator<Entry<Ingredient, Double>> iter = ingredients.entrySet().iterator();
+		while (iter.hasNext()){
+			allergens.addAll(iter.next().getKey().getAllergens());
 		}
-		enough.put(name, y);
-		
+		return allergens;
 	}
 	
 	//DELETE
-	public static void delete(String name){
-		names.remove(name);
+	public void deleteIngredient(String name){
 		ingredients.remove(name);
-		allergens.remove(name);
-		expiration.remove(name);
-		instruction.remove(name);
-		enough.remove(name);
 	}
 	
 	//PRINT
-	public static void print(String name){
-		System.out.println("RECIPE INFO:");
-		System.out.println("Instruction: " + getInstruction(name));
-		System.out.println("Allergens: " + getAllergens(name));
-		System.out.println("Expiration: " + getExpiration(name));
-		System.out.println("Enough ingredients: " + getEnough(name));
-		System.out.println("Ingredients: " + getIngredients(name).toString());
-		System.out.println();
-		System.out.println();
+	public void print(){}
 	}
-}

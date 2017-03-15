@@ -3,64 +3,48 @@ import java.util.*;
 
 public class Ingredient {
 	
-	//RUNTIME DATABASE
-	private static ArrayList<String> names = new ArrayList<String>();
-	private static HashMap<String, Unit> unit = new HashMap<String, Unit>();
-	private static HashMap<String, ArrayList<String>> allergens = new HashMap<String, ArrayList<String>>();
-	private static HashMap<String, Date> expiration = new HashMap<String, Date>();
-	private static HashMap<String, Double> amount = new HashMap<String, Double>();
+	//PROPERTIES
+	private String name;
+	private Unit unit;
+	private ArrayList<String> allergens;
+	private Date expiration;
 	
-
-	//READ
-	public static ArrayList<String> getNames(){
-		return names;
+	//SETTERS
+	public void setName(String name){
+		this.name = name;
 	}
-	public static Unit getUnit(String name){
-		return unit.get(name);
+	public void setUnit(Unit unit){
+		this.unit = unit;
 	}
-	public static ArrayList<String> getAllergens(String name){
-		return allergens.get(name);
+	public void setAllergens(ArrayList<String> allergens){
+		this.allergens = allergens;
 	}
-	public static Date getExpiration(String name){
-		return expiration.get(name);
-	}
-	public static double getAmount(String name){
-		return amount.get(name);
+	public void setExpiration(Date expiration){
+		this.expiration = expiration;
 	}
 	
-	//CREATE & UPDATE
-	public static void setUnit(String name, Unit x){
-		unit.put(name, x);
-		if (!names.contains(name)) names.add(name);
+	//GETTERS
+	public String getName(){
+		return name;
 	}
-	public static void setAllergens(String name, ArrayList<String> x){
-		allergens.put(name, x);
+	public Unit getUnit(){
+		return unit;
 	}
-	public static void setExpiration(String name, Date x){
-		expiration.put(name, x);
+	public ArrayList<String> getAllergens(){
+		return allergens;
 	}
-	public static void setAmount(String name, double x){
-		amount.put(name, x);
+	public Date getExpiration(){
+		return expiration;
 	}
 	
 	//DELETE
-	public static void delete(String name){
-		unit.remove(name);
-		allergens.remove(name);
-		expiration.remove(name);
-		amount.remove(name);
-		names.remove(name);
+	public void deleteAllergens(){
+		allergens.clear();
+	}
+	public void deleteExpiration(){
+		expiration = null;
 	}
 	
 	//PRINT
-	public static void print(String name){
-		System.out.println("INGREDIENT INFO:");
-		System.out.println("Name: " + name);
-		System.out.println("Amount: " + getAmount(name) + " " + unit.get(name));
-		System.out.println("Expiration: " + getExpiration(name));
-		System.out.println("Allergens: " + getAllergens(name));
-		System.out.println();
-	}
-	
-
+	public void print(){}
 }
