@@ -1,5 +1,4 @@
 package recipeTool;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.*;
 public class Recipe {
@@ -45,24 +44,28 @@ public class Recipe {
 	private static void setExpiration(String name, Date x){
 		expiration.put(name, x);
 	}
-	private static void setAllergens(String name, ArrayList<String> x){
+	private static void addAllergens(String name, ArrayList<String> x){
 		allergens.get(name).addAll(x);
 	}
 	public static void update(String name) throws ParseException{
 		boolean y = true;
-		expiration.put(name, DateFormat.getDateInstance().parse("31.12.2020"));
+		Calendar comparison = Calendar.getInstance();
+		comparison.add(Calendar.YEAR, 100);
+		Date compare = comparison.getTime();
+		setExpiration(name, compare);
+
 		
 		
 		Iterator<String> iter = ingredients.get(name).keySet().iterator();
 		while (iter.hasNext()) {
 			String x = iter.next();
 			
-			if(getIngredients(name).get(x) > Ingredient.getAmount(x)) y = false; //ready to cook?
+			if(getIngredients(name).get(x) > Ingredient.getAmount(x)) y = false; //enough ingredients
 			
 			
 			if(getExpiration(name).after(Ingredient.getExpiration(x))) setExpiration(name, Ingredient.getExpiration(x)); //soonest expiry?
 			
-			setAllergens(name, Ingredient.getAllergens(x));
+			addAllergens(name, Ingredient.getAllergens(x)); //add allergens from each ingredient into recipe
 
 		}
 		enough.put(name, y);
@@ -85,7 +88,7 @@ public class Recipe {
 		System.out.println("Instruction: " + getInstruction(name));
 		System.out.println("Allergens: " + getAllergens(name));
 		System.out.println("Expiration: " + getExpiration(name));
-		System.out.println("Ready to cook: " + getEnough(name));
+		System.out.println("Enough ingredients: " + getEnough(name));
 		System.out.println("Ingredients: " + getIngredients(name).toString());
 		System.out.println();
 		System.out.println();

@@ -15,8 +15,8 @@ public class RecipeTool {
 		Ingredient.setExpiration(y, DateFormat.getDateInstance().parse("16.3.2017"));
 		Ingredient.setAmount(y, 700);
 		ArrayList<String> x = new ArrayList<String>();
-		//x.add("laktoosi");
-		//x.add("persikka");
+		x.add("laktoosi");
+		x.add("persikka");
 		Ingredient.setAllergens(y, x);
 		Ingredient.print(y);
 		
@@ -25,8 +25,8 @@ public class RecipeTool {
 		Ingredient.setExpiration(y, DateFormat.getDateInstance().parse("14.3.2017"));
 		Ingredient.setAmount(y, 300);
 		x = new ArrayList<String>();
-		//x.add("silakka");
-		//x.add("porkkana");
+		x.add("silakka");
+		x.add("porkkana");
 		Ingredient.setAllergens(y, x);
 		Ingredient.print(y);
 
