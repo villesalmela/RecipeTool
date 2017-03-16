@@ -32,6 +32,9 @@ public class RecipeTool {
 		Book.print();
 		Book.getRecipe("maitokaakao").print();
 		
+		Storage.deleteIngredient("kaakao");
+		Storage.print();
+		
 	}
 
 }

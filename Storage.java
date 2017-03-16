@@ -24,7 +24,9 @@ public class Storage {
 	}
 	
 	//DELETE
-	public static void deleteIngredient(String name){}
+	public static void deleteIngredient(String name){
+		ingredients.remove(name);
+	}
 	
 	//PRINT
 	public static void print(){
