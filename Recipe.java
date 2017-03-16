@@ -8,12 +8,26 @@ public class Recipe {
 	//PROPERTIES
 	private String name;
 	private String instruction;
-	private HashMap<Ingredient, Double> ingredients;
+	private boolean enough;
+	private HashMap<Ingredient, Double> ingredients = new HashMap<Ingredient, Double>();
+	
+	//CONSTRUCTOR
+	public Recipe(String name, String instruction, Ingredient ingredient, Double amount){
+		this.name = name;
+		this.instruction = instruction;
+		this.ingredients.put(ingredient, amount);
+	}
 	
 	//SETTERS
-	public void setName(String name){}
-	public void setInstruction(String instruction){}
-	public void setIngredient(Ingredient ingredient, double amount){}
+	public void setName(String name){
+		this.name = name;
+	}
+	public void setInstruction(String instruction){
+		this.instruction = instruction;
+	}
+	public void setIngredient(Ingredient ingredient, double amount){
+		this.ingredients.put(ingredient, amount);
+	}
 	
 	//GETTERS
 	public String getName(){
@@ -25,6 +39,15 @@ public class Recipe {
 	public HashMap<Ingredient, Double> getIngredients(){
 		return ingredients;
 	}
+	public boolean getEnough(){
+		enough = true;
+		Iterator<Entry<Ingredient, Double>> iter = ingredients.entrySet().iterator();
+		while (iter.hasNext()){
+			Ingredient testIngredient = iter.next().getKey();
+			if (Storage.getAmount(testIngredient.getName()) < ingredients.get(testIngredient)) enough = false;
+		}
+		return enough;
+	}
 	public Date getExpiration(){
 		Calendar temp = Calendar.getInstance();
 		temp.add(Calendar.YEAR, 100);
@@ -33,7 +56,7 @@ public class Recipe {
 		Iterator<Entry<Ingredient, Double>> iter = ingredients.entrySet().iterator();
 		while (iter.hasNext()){
 			Date compare = iter.next().getKey().getExpiration();
-			if (compare.before(expiration)) compare = expiration;
+			if (compare.before(expiration)) expiration = compare;
 		}
 		return expiration;
 	}
@@ -52,5 +75,14 @@ public class Recipe {
 	}
 	
 	//PRINT
-	public void print(){}
+	public void print(){
+		System.out.println("RECIPE INFO");
+		System.out.println("Name: " + name);
+		System.out.println("Ingredients: " + ingredients.entrySet());
+		System.out.println("Instruction: " + instruction);
+		System.out.println("All ingredients in storage? " + getEnough());
+		System.out.println("Expiration: " + getExpiration());
+		System.out.println("Allergens: " + getAllergens());
+		System.out.println("");
 	}
+}
