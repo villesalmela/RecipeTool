@@ -1,7 +1,6 @@
 package recipeTool;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 public class Recipe {
 	
@@ -9,13 +8,12 @@ public class Recipe {
 	private String name;
 	private String instruction;
 	private boolean enough;
-	private HashMap<Ingredient, Double> ingredients = new HashMap<Ingredient, Double>();
+	private HashMap<String, Double> ingredients = new HashMap<String, Double>();
 	
 	//CONSTRUCTOR
-	public Recipe(String name, String instruction, Ingredient ingredient, Double amount){
+	public Recipe(String name, String instruction){
 		this.name = name;
 		this.instruction = instruction;
-		this.ingredients.put(ingredient, amount);
 	}
 	
 	//SETTERS
@@ -25,8 +23,8 @@ public class Recipe {
 	public void setInstruction(String instruction){
 		this.instruction = instruction;
 	}
-	public void setIngredient(Ingredient ingredient, double amount){
-		this.ingredients.put(ingredient, amount);
+	public void setIngredient(String name, double amount){
+		ingredients.put(name, amount);
 	}
 	
 	//GETTERS
@@ -36,38 +34,48 @@ public class Recipe {
 	public String getInstruction(){
 		return instruction;
 	}
-	public HashMap<Ingredient, Double> getIngredients(){
-		return ingredients;
+	public Set<String> listIngredients(){
+		return ingredients.keySet();
 	}
+	public double getAmount(String name){
+		return ingredients.get(name);
+	}
+	
+	
+	
+	
+	
 	public boolean getEnough(){
 		enough = true;
-		Iterator<Entry<Ingredient, Double>> iter = ingredients.entrySet().iterator();
-		while (iter.hasNext()){
-			Ingredient testIngredient = iter.next().getKey();
-			if (Storage.getAmount(testIngredient.getName()) < ingredients.get(testIngredient)) enough = false;
+		for (String name : listIngredients()){
+			if (getAmount(name) > Storage.getAmount(name)) enough = false;
 		}
 		return enough;
 	}
 	public Date getExpiration(){
-		Calendar temp = Calendar.getInstance();
-		temp.add(Calendar.YEAR, 100);
-		Date expiration = temp.getTime();
-		
-		Iterator<Entry<Ingredient, Double>> iter = ingredients.entrySet().iterator();
-		while (iter.hasNext()){
-			Date compare = iter.next().getKey().getExpiration();
-			if (compare.before(expiration)) expiration = compare;
+		Date expiration = null;
+		Date compare;
+		for (String name : listIngredients()){
+			compare = Storage.getIngredient(name).getExpiration();
+			if (expiration == null) expiration = compare; 
+			else if (expiration.after(compare)) expiration = compare;
 		}
+
 		return expiration;
 	}
-	public ArrayList<String> getAllergens(){
+	public ArrayList<String> listAllergens(){
 		ArrayList<String> allergens = new ArrayList<String>();
-		Iterator<Entry<Ingredient, Double>> iter = ingredients.entrySet().iterator();
-		while (iter.hasNext()){
-			allergens.addAll(iter.next().getKey().getAllergens());
+
+		for (String name : listIngredients()){
+			allergens.addAll(Storage.getIngredient(name).listAllergens());
 		}
 		return allergens;
 	}
+	
+	
+	
+	
+	
 	
 	//DELETE
 	public void deleteIngredient(String name){
@@ -82,7 +90,7 @@ public class Recipe {
 		System.out.println("Instruction: " + instruction);
 		System.out.println("All ingredients in storage? " + getEnough());
 		System.out.println("Expiration: " + getExpiration());
-		System.out.println("Allergens: " + getAllergens());
+		System.out.println("Allergens: " + listAllergens());
 		System.out.println("");
 	}
 }

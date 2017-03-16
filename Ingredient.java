@@ -38,7 +38,7 @@ public class Ingredient {
 	public Unit getUnit(){
 		return unit;
 	}
-	public ArrayList<String> getAllergens(){
+	public ArrayList<String> listAllergens(){
 		return allergens;
 	}
 	public Date getExpiration(){
@@ -64,7 +64,5 @@ public class Ingredient {
 		System.out.println("");
 	}
 	
-	//TEMP
-	public String toString(){return name;}
-	
+
 }

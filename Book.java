@@ -34,30 +34,34 @@ public class Book {
 	//SEARCH
 	public static Set<String> search(boolean enough, ArrayList<String> allergens, ArrayList<String> ingredients){
 		Set<String> result = listRecipes();
+		Set<String> rejected = new HashSet<String>();
 		if (enough){
 			for (String name : result){
-				if (Book.getRecipe(name).getEnough() == false) result.remove(name);
+				if (Book.getRecipe(name).getEnough() == false) rejected.add(name);
 			}
 		}
 		if (!(allergens.isEmpty())){
 			for (String name : result){
 				for (String allergen : allergens){
-					if (Book.getRecipe(name).getAllergens().contains(allergen)) result.remove(name);
+					if (Book.getRecipe(name).listAllergens().contains(allergen)) {
+						rejected.add(name);
+						break;
+					}
 				}
 			}
 		}
 		if (!(ingredients.isEmpty())){
-			boolean temp;
 			for (String name : result){
-				for(String ingredient2 : ingredients){
-					temp = false;
-					for (Ingredient ingredient : Book.getRecipe(name).getIngredients().keySet()){
-				
-						if (ingredient.getName().equals(ingredient2)) temp = true;
+				for (String ingredient : ingredients){
+					if (!(Book.getRecipe(name).listIngredients().contains(ingredient))) {
+						rejected.add(name);
+						break;
 					}
-					if (temp == false) result.remove(name);	
 				}
 			}
+		}
+		for (String name : rejected){
+			result.remove(name); 
 		}
 		return result;
 	}
