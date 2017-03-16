@@ -25,6 +25,7 @@ public class RecipeTool {
 		r1.setIngredient(Storage.getIngredient("kaakao"), 3.4);
 		Book.setRecipe(r1);
 		
+		
 		Storage.print();		
 		Storage.getIngredient("maito").print();
 		Storage.getIngredient("kaakao").print();
@@ -32,8 +33,14 @@ public class RecipeTool {
 		Book.print();
 		Book.getRecipe("maitokaakao").print();
 		
-		Storage.deleteIngredient("kaakao");
-		Storage.print();
+		
+		ArrayList<String> a = new ArrayList<String>();
+		ArrayList<String> i = new ArrayList<String>();
+		a.add("silakka");
+		i.add("maito");
+		i.add("kaakao");
+		System.out.println(Book.search(false, a, i));
+
 		
 	}
 

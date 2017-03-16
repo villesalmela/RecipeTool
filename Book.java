@@ -30,4 +30,35 @@ public class Book {
 		System.out.println("Recipes in book: " + listRecipes());
 		System.out.println("");
 	}
+	
+	//SEARCH
+	public static Set<String> search(boolean enough, ArrayList<String> allergens, ArrayList<String> ingredients){
+		Set<String> result = listRecipes();
+		if (enough){
+			for (String name : result){
+				if (Book.getRecipe(name).getEnough() == false) result.remove(name);
+			}
+		}
+		if (!(allergens.isEmpty())){
+			for (String name : result){
+				for (String allergen : allergens){
+					if (Book.getRecipe(name).getAllergens().contains(allergen)) result.remove(name);
+				}
+			}
+		}
+		if (!(ingredients.isEmpty())){
+			boolean temp;
+			for (String name : result){
+				for(String ingredient2 : ingredients){
+					temp = false;
+					for (Ingredient ingredient : Book.getRecipe(name).getIngredients().keySet()){
+				
+						if (ingredient.getName().equals(ingredient2)) temp = true;
+					}
+					if (temp == false) result.remove(name);	
+				}
+			}
+		}
+		return result;
+	}
 }
