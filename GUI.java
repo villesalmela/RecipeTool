@@ -1,0 +1,297 @@
+package recipeTool;
+import javax.swing.*;
+import java.awt.*;
+import javax.swing.event.*;
+import java.awt.event.*;
+import java.text.DateFormat;
+
+
+public class GUI extends JFrame{
+
+//CREATE (internally) EXPOSED COMPONENTS
+	private JList<String> list1_ingredients = new JList<String>();
+	private JTextPane text1_amount = new JTextPane();
+	private JTextPane text1_unit = new JTextPane();
+	private JTextPane text1_allergens = new JTextPane();
+	private JTextPane text1_expiration = new JTextPane();
+	private JButton btn1_delete = new JButton("Delete ingredient");
+	
+	private JList<String> list2_recipes = new JList<String>();
+	private JTextPane text2_ingredients = new JTextPane();
+	private JTextPane text2_instruction = new JTextPane();
+	private JButton btn2_delete = new JButton("Delete recipe");
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3121708348469315637L;
+
+	
+
+	public GUI(){
+//CREATE FRAME
+			super("recipeTool");
+
+			setResizable(false);
+			setDefaultCloseOperation(EXIT_ON_CLOSE);
+			setBounds(0,0,750,750);
+			setLocationRelativeTo(null);
+			getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
+			
+//CREATE PANELS
+			JPanel panel_1 = new JPanel();
+			JPanel panel_2 = new JPanel();
+			JPanel panel_3 = new JPanel();
+		
+//LAYOUT PANELS
+			GridBagLayout gbl_panel_1 = new GridBagLayout();
+			gbl_panel_1.columnWidths = new int[]{0, 68, 47, 84, 75, 93, 0, 0};
+			gbl_panel_1.rowHeights = new int[]{38, 297, 0};
+			gbl_panel_1.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+			gbl_panel_1.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+			panel_1.setLayout(gbl_panel_1);
+			
+			GridBagLayout gbl_panel_2 = new GridBagLayout();
+			gbl_panel_2.columnWidths = new int[]{1, 98, 132, 114, 80, 0};
+			gbl_panel_2.rowHeights = new int[]{25, 190, 0};
+			gbl_panel_2.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+			gbl_panel_2.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+			panel_2.setLayout(gbl_panel_2);
+			
+			GridBagLayout gbl_panel_3 = new GridBagLayout();
+			gbl_panel_3.columnWidths = new int[]{0};
+			gbl_panel_3.rowHeights = new int[]{0};
+			gbl_panel_3.columnWeights = new double[]{Double.MIN_VALUE};
+			gbl_panel_3.rowWeights = new double[]{Double.MIN_VALUE};
+			panel_3.setLayout(gbl_panel_3);
+			
+//CREATE TABS
+			JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+			getContentPane().add(tabbedPane);
+			tabbedPane.addTab("Ingredients", null, panel_1, null);
+			tabbedPane.addTab("Recipes", null, panel_2, null);
+			tabbedPane.addTab("Filter", null, panel_3, null);
+			
+//CREATE LABELS
+			JLabel lbl1_amount = new JLabel("Amount");
+			JLabel lbl1_unit = new JLabel("Unit");
+			JLabel lbl1_allergens = new JLabel("Allergens");
+			JLabel lbl1_expiration = new JLabel("Expiration");
+			
+			JLabel lbl2_ingredients = new JLabel("Ingredients");
+			JLabel lbl2_insturctions = new JLabel("Insturctions");
+			
+//SETUP LABELS
+			lbl1_amount.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lbl1_unit.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lbl1_allergens.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lbl1_expiration.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			
+			lbl2_ingredients.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lbl2_insturctions.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			
+//LAYOUT LABELS
+			GridBagConstraints gbc_lbl1_amount = new GridBagConstraints();
+			gbc_lbl1_amount.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl1_amount.gridx = 1;
+			gbc_lbl1_amount.gridy = 0;
+			panel_1.add(lbl1_amount, gbc_lbl1_amount);
+			
+			GridBagConstraints gbc_lbl1_unit = new GridBagConstraints();
+			gbc_lbl1_unit.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl1_unit.gridx = 2;
+			gbc_lbl1_unit.gridy = 0;
+			panel_1.add(lbl1_unit, gbc_lbl1_unit);
+			
+			GridBagConstraints gbc_lbl1_allergens = new GridBagConstraints();
+			gbc_lbl1_allergens.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl1_allergens.gridx = 3;
+			gbc_lbl1_allergens.gridy = 0;
+			panel_1.add(lbl1_allergens, gbc_lbl1_allergens);
+				
+			GridBagConstraints gbc_lblExpiration = new GridBagConstraints();
+			gbc_lblExpiration.insets = new Insets(0, 0, 5, 5);
+			gbc_lblExpiration.gridx = 4;
+			gbc_lblExpiration.gridy = 0;
+			panel_1.add(lbl1_expiration, gbc_lblExpiration);
+			
+			GridBagConstraints gbc_lbl2_ingredients = new GridBagConstraints();
+			gbc_lbl2_ingredients.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl2_ingredients.gridx = 1;
+			gbc_lbl2_ingredients.gridy = 0;
+			panel_2.add(lbl2_ingredients, gbc_lbl2_ingredients);
+			
+			GridBagConstraints gbc_lblInsturctions = new GridBagConstraints();
+			gbc_lblInsturctions.insets = new Insets(0, 0, 5, 5);
+			gbc_lblInsturctions.gridx = 2;
+			gbc_lblInsturctions.gridy = 0;
+			panel_2.add(lbl2_insturctions, gbc_lblInsturctions);
+			
+//SETUP LISTS
+			list1_ingredients.setListData(Storage.listIngredients());
+			list1_ingredients.addListSelectionListener(new ListHandler());
+			
+			list2_recipes.setListData(Book.listRecipes());
+			list2_recipes.addListSelectionListener(new ListHandler());
+			
+//LAYOUT LISTS
+			GridBagConstraints gbc_list1_ingredients = new GridBagConstraints();
+			gbc_list1_ingredients.fill = GridBagConstraints.BOTH;
+			gbc_list1_ingredients.insets = new Insets(0, 0, 0, 5);
+			gbc_list1_ingredients.gridheight = 2;
+			gbc_list1_ingredients.gridx = 5;
+			gbc_list1_ingredients.gridy = 0;
+			panel_1.add(list1_ingredients, gbc_list1_ingredients);
+			
+			GridBagConstraints gbc_list2_recipes = new GridBagConstraints();
+			gbc_list2_recipes.gridheight = 2;
+			gbc_list2_recipes.fill = GridBagConstraints.BOTH;
+			gbc_list2_recipes.insets = new Insets(0, 0, 0, 5);
+			gbc_list2_recipes.gridx = 3;
+			gbc_list2_recipes.gridy = 0;
+			panel_2.add(list2_recipes, gbc_list2_recipes);
+			
+//SETUP BUTTONS
+			btn1_delete.addActionListener(new ButtonHandler());
+			btn2_delete.addActionListener(new ButtonHandler());
+
+//LAYOUT BUTTONS
+			GridBagConstraints gbc_btn1_delete = new GridBagConstraints();
+			gbc_btn1_delete.anchor = GridBagConstraints.SOUTHWEST;
+			gbc_btn1_delete.insets = new Insets(0, 0, 5, 0);
+			gbc_btn1_delete.gridx = 6;
+			gbc_btn1_delete.gridy = 0;
+			panel_1.add(btn1_delete, gbc_btn1_delete);
+			
+			GridBagConstraints gbc_btn2_delete = new GridBagConstraints();
+			gbc_btn2_delete.insets = new Insets(0, 0, 5, 5);
+			gbc_btn2_delete.anchor = GridBagConstraints.NORTHWEST;
+			gbc_btn2_delete.gridx = 4;
+			gbc_btn2_delete.gridy = 0;
+			panel_2.add(btn2_delete, gbc_btn2_delete);
+			
+//SETUP TEXTPANES
+			text1_amount.setEditable(false);
+			text1_unit.setEditable(false);
+			text1_allergens.setEditable(false);
+			text1_expiration.setEditable(false);
+			
+			text2_ingredients.setEditable(false);
+			
+//LAYOUT TEXTPANES
+			GridBagConstraints gbc_text1_amount = new GridBagConstraints();
+			gbc_text1_amount.fill = GridBagConstraints.HORIZONTAL;
+			gbc_text1_amount.anchor = GridBagConstraints.NORTH;
+			gbc_text1_amount.insets = new Insets(0, 0, 0, 5);
+			gbc_text1_amount.gridx = 1;
+			gbc_text1_amount.gridy = 1;
+			panel_1.add(text1_amount, gbc_text1_amount);
+			
+			GridBagConstraints gbc_text1_unit = new GridBagConstraints();
+			gbc_text1_unit.fill = GridBagConstraints.HORIZONTAL;
+			gbc_text1_unit.anchor = GridBagConstraints.NORTH;
+			gbc_text1_unit.insets = new Insets(0, 0, 0, 5);
+			gbc_text1_unit.gridx = 2;
+			gbc_text1_unit.gridy = 1;
+			panel_1.add(text1_unit, gbc_text1_unit);
+			
+			GridBagConstraints gbc_text1_allergens = new GridBagConstraints();
+			gbc_text1_allergens.fill = GridBagConstraints.HORIZONTAL;
+			gbc_text1_allergens.anchor = GridBagConstraints.NORTH;
+			gbc_text1_allergens.insets = new Insets(0, 0, 0, 5);
+			gbc_text1_allergens.gridx = 3;
+			gbc_text1_allergens.gridy = 1;
+			panel_1.add(text1_allergens, gbc_text1_allergens);
+			
+			GridBagConstraints gbc_text1_expiration = new GridBagConstraints();
+			gbc_text1_expiration.fill = GridBagConstraints.HORIZONTAL;
+			gbc_text1_expiration.anchor = GridBagConstraints.NORTH;
+			gbc_text1_expiration.insets = new Insets(0, 0, 0, 5);
+			gbc_text1_expiration.gridx = 4;
+			gbc_text1_expiration.gridy = 1;
+			panel_1.add(text1_expiration, gbc_text1_expiration);
+			
+			GridBagConstraints gbc_text2_ingredients = new GridBagConstraints();
+			gbc_text2_ingredients.anchor = GridBagConstraints.NORTH;
+			gbc_text2_ingredients.fill = GridBagConstraints.HORIZONTAL;
+			gbc_text2_ingredients.insets = new Insets(0, 0, 0, 5);
+			gbc_text2_ingredients.gridx = 1;
+			gbc_text2_ingredients.gridy = 1;
+			panel_2.add(text2_ingredients, gbc_text2_ingredients);
+
+			GridBagConstraints gbc_text2_instruction = new GridBagConstraints();
+			gbc_text2_instruction.fill = GridBagConstraints.HORIZONTAL;
+			gbc_text2_instruction.anchor = GridBagConstraints.NORTH;
+			gbc_text2_instruction.insets = new Insets(0, 0, 0, 5);
+			gbc_text2_instruction.gridx = 2;
+			gbc_text2_instruction.gridy = 1;
+			panel_2.add(text2_instruction, gbc_text2_instruction);
+		}
+
+
+//NOTICE	
+	private void notice(String title, String message){
+		JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+//WARNING	
+	private int confirm(String title, String message){
+		return JOptionPane.showConfirmDialog(null, message, title, JOptionPane.OK_CANCEL_OPTION);
+	}
+
+//LISTHANDLER
+	private class ListHandler implements ListSelectionListener{
+		
+		public void valueChanged(ListSelectionEvent e) {
+			if (e.getSource() == list1_ingredients){
+				String iname = list1_ingredients.getSelectedValue();
+				if (iname == null) return;
+				if(Storage.hasIngredient(iname)){
+					text1_unit.setText(Storage.getUnit(iname).toString());
+					text1_amount.setText(Storage.getAmount(iname).toString());
+					text1_allergens.setText(Storage.getAllergens(iname).toString());
+					text1_expiration.setText(DateFormat.getDateInstance().format(Storage.getExpiration(iname)));
+				}
+			}
+			if (e.getSource() == list2_recipes){
+				String temp = "";
+				String rname = list2_recipes.getSelectedValue();
+				if (rname == null) return;
+				for (String iname : Book.listIngredients(rname)){
+					if (Book.hasIngredient(rname, iname) == false) continue;
+					temp = String.join("",temp,"\n",Book.getAmount(rname, iname).toString()," ",Storage.getUnit(iname).toString()," ",iname,"\n");
+				}
+				text2_ingredients.setText(temp);
+				text2_instruction.setText(Book.getInsturction(rname));
+			}
+		}//end valueChanged
+		
+	}//end private class ListHandler
+
+//BUTTONHANDLER
+	private class ButtonHandler implements ActionListener{
+
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == btn1_delete){
+				String iname = list1_ingredients.getSelectedValue();
+				if (iname == null) notice("Notice","You must first select an ingredient.");
+				int check = confirm("Warning","If you delete ingredient in here, it will also be deleted from all recipes.");
+				if (check == 2) return;
+				Storage.deleteIngredient(iname);
+				Book.deleteAllIngredient(iname);
+				list1_ingredients.setListData(Storage.listIngredients());
+				list2_recipes.setListData(Book.listRecipes());
+			}
+			if (e.getSource() == btn2_delete){
+				String rname = list2_recipes.getSelectedValue();
+				if (rname == null) notice("Notice","You must first select a recipe.");
+				Book.deleteRecipe(rname);
+				list2_recipes.setListData(Book.listRecipes());
+			}
+		}
+		
+	}// end private class ButtonHandler
+}//end public class
+
+
