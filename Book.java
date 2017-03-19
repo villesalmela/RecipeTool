@@ -28,7 +28,7 @@ public class Book {
 	
 	
 //GETTERS
-	public static Vector<String> listRecipes(){									//get list of all recipes in A-Z order
+	public static Vector<String> listRecipes(){										//get list of all recipes in A-Z order
 		Vector<String> temp = new Vector<String>();
 		temp.addAll(ingredients.keySet());
 		return temp;
@@ -38,7 +38,7 @@ public class Book {
 		temp.addAll(ingredients.get(name).keySet());
 		return temp;
 	}
-	public static boolean hasIngredient(String rname, String iname){
+	public static boolean hasIngredient(String rname, String iname){				//true, if recipe has specified ingredient
 		boolean has = false;
 		if (listIngredients(rname).contains(iname)) has = true;
 		return has;
@@ -50,7 +50,7 @@ public class Book {
 		}
 		return temp;
 	}
-	public static Date getExpiration(String rname) {									//get the closest expiration date
+	public static Date getExpiration(String rname) {								//get the closest expiration date
 		Date expiration = null;														//	for any ingredient in one recipe
 		for (String iname : ingredients.get(rname).keySet()){
 			if (Storage.getExpiration(iname) == null) continue;

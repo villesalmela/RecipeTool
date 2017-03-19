@@ -21,6 +21,8 @@ public class GUI extends JFrame{
 	private JTextPane text2_instruction = new JTextPane();
 	private JButton btn2_delete = new JButton("Delete recipe");
 	
+	private JButton btn3_filter = new JButton("Filter");
+	
 	
 	/**
 	 * 
@@ -60,10 +62,10 @@ public class GUI extends JFrame{
 			panel_2.setLayout(gbl_panel_2);
 			
 			GridBagLayout gbl_panel_3 = new GridBagLayout();
-			gbl_panel_3.columnWidths = new int[]{0};
-			gbl_panel_3.rowHeights = new int[]{0};
-			gbl_panel_3.columnWeights = new double[]{Double.MIN_VALUE};
-			gbl_panel_3.rowWeights = new double[]{Double.MIN_VALUE};
+			gbl_panel_3.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
+			gbl_panel_3.rowHeights = new int[]{0, 0, 0};
+			gbl_panel_3.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+			gbl_panel_3.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 			panel_3.setLayout(gbl_panel_3);
 			
 //CREATE TABS
@@ -72,6 +74,57 @@ public class GUI extends JFrame{
 			tabbedPane.addTab("Ingredients", null, panel_1, null);
 			tabbedPane.addTab("Recipes", null, panel_2, null);
 			tabbedPane.addTab("Filter", null, panel_3, null);
+			
+//CREATE CHECKBOX
+			JCheckBox chckbxNoShopping = new JCheckBox("No Shopping");
+			
+//LAYOUT CHECKBOX
+			GridBagConstraints gbc_chckbxNoShopping = new GridBagConstraints();
+			gbc_chckbxNoShopping.insets = new Insets(0, 0, 0, 5);
+			gbc_chckbxNoShopping.gridx = 1;
+			gbc_chckbxNoShopping.gridy = 1;
+			panel_3.add(chckbxNoShopping, gbc_chckbxNoShopping);
+			
+			
+//CREATE COMBOBOXES
+			JComboBox<String> cbox3_mustHave = new JComboBox<String>();
+			JComboBox<String> cbox3_avoidAllergens = new JComboBox<String>();
+
+//LAYOUT COMBOBOXES
+			GridBagConstraints gbc_cbox3_mustHave = new GridBagConstraints();
+			gbc_cbox3_mustHave.insets = new Insets(0, 0, 0, 5);
+			gbc_cbox3_mustHave.fill = GridBagConstraints.HORIZONTAL;
+			gbc_cbox3_mustHave.gridx = 0;
+			gbc_cbox3_mustHave.gridy = 1;
+			panel_3.add(cbox3_mustHave, gbc_cbox3_mustHave);
+			
+			GridBagConstraints gbc_cbox3_avoidAllergens = new GridBagConstraints();
+			gbc_cbox3_avoidAllergens.insets = new Insets(0, 0, 0, 5);
+			gbc_cbox3_avoidAllergens.fill = GridBagConstraints.HORIZONTAL;
+			gbc_cbox3_avoidAllergens.gridx = 2;
+			gbc_cbox3_avoidAllergens.gridy = 1;
+			panel_3.add(cbox3_avoidAllergens, gbc_cbox3_avoidAllergens);
+			
+			
+
+			
+			
+//CREATE RADIO BUTTONS
+			JRadioButton rdbtn3_az = new JRadioButton("A-Z");
+			JRadioButton rdbtn3_expiration = new JRadioButton("Expiration date");
+	
+//LAYOUT RADIO BUTTONS
+			GridBagConstraints gbc_rdbtn3_az = new GridBagConstraints();
+			gbc_rdbtn3_az.insets = new Insets(0, 0, 0, 5);
+			gbc_rdbtn3_az.gridx = 3;
+			gbc_rdbtn3_az.gridy = 1;
+			panel_3.add(rdbtn3_az, gbc_rdbtn3_az);
+
+			GridBagConstraints gbc_rdbtn3_expiration = new GridBagConstraints();
+			gbc_rdbtn3_expiration.insets = new Insets(0, 0, 0, 5);
+			gbc_rdbtn3_expiration.gridx = 4;
+			gbc_rdbtn3_expiration.gridy = 1;
+			panel_3.add(rdbtn3_expiration, gbc_rdbtn3_expiration);
 			
 //CREATE LABELS
 			JLabel lbl1_amount = new JLabel("Amount");
@@ -82,6 +135,11 @@ public class GUI extends JFrame{
 			JLabel lbl2_ingredients = new JLabel("Ingredients");
 			JLabel lbl2_insturctions = new JLabel("Insturctions");
 			
+			JLabel lbl3_mustHave = new JLabel("Must have ingredients");
+			JLabel lbl3_noShopping = new JLabel("No shopping");
+			JLabel lbl3_avoidAllergens = new JLabel("Avoid allergens");
+			JLabel lbl3_sortBy = new JLabel("Sort by");
+			
 //SETUP LABELS
 			lbl1_amount.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			lbl1_unit.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -90,6 +148,11 @@ public class GUI extends JFrame{
 			
 			lbl2_ingredients.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			lbl2_insturctions.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			
+			lbl3_mustHave.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lbl3_noShopping.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lbl3_avoidAllergens.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lbl3_sortBy.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			
 //LAYOUT LABELS
 			GridBagConstraints gbc_lbl1_amount = new GridBagConstraints();
@@ -122,11 +185,37 @@ public class GUI extends JFrame{
 			gbc_lbl2_ingredients.gridy = 0;
 			panel_2.add(lbl2_ingredients, gbc_lbl2_ingredients);
 			
-			GridBagConstraints gbc_lblInsturctions = new GridBagConstraints();
-			gbc_lblInsturctions.insets = new Insets(0, 0, 5, 5);
-			gbc_lblInsturctions.gridx = 2;
-			gbc_lblInsturctions.gridy = 0;
-			panel_2.add(lbl2_insturctions, gbc_lblInsturctions);
+			GridBagConstraints gbc_lbl2_insturctions = new GridBagConstraints();
+			gbc_lbl2_insturctions.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl2_insturctions.gridx = 2;
+			gbc_lbl2_insturctions.gridy = 0;
+			panel_2.add(lbl2_insturctions, gbc_lbl2_insturctions);
+			
+			GridBagConstraints gbc_lbl3_mustHave = new GridBagConstraints();
+			gbc_lbl3_mustHave.fill = GridBagConstraints.HORIZONTAL;
+			gbc_lbl3_mustHave.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl3_mustHave.gridx = 0;
+			gbc_lbl3_mustHave.gridy = 0;
+			panel_3.add(lbl3_mustHave, gbc_lbl3_mustHave);
+			
+			GridBagConstraints gbc_lbl3_noShopping = new GridBagConstraints();
+			gbc_lbl3_noShopping.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl3_noShopping.gridx = 1;
+			gbc_lbl3_noShopping.gridy = 0;
+			panel_3.add(lbl3_noShopping, gbc_lbl3_noShopping);
+			
+			GridBagConstraints gbc_lbl3_avoidAllergens = new GridBagConstraints();
+			gbc_lbl3_avoidAllergens.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl3_avoidAllergens.gridx = 2;
+			gbc_lbl3_avoidAllergens.gridy = 0;
+			panel_3.add(lbl3_avoidAllergens, gbc_lbl3_avoidAllergens);
+		
+			GridBagConstraints gbc_lbl3_sortBy = new GridBagConstraints();
+			gbc_lbl3_sortBy.gridwidth = 2;
+			gbc_lbl3_sortBy.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl3_sortBy.gridx = 3;
+			gbc_lbl3_sortBy.gridy = 0;
+			panel_3.add(lbl3_sortBy, gbc_lbl3_sortBy);
 			
 //SETUP LISTS
 			list1_ingredients.setListData(Storage.listIngredients());
@@ -155,6 +244,7 @@ public class GUI extends JFrame{
 //SETUP BUTTONS
 			btn1_delete.addActionListener(new ButtonHandler());
 			btn2_delete.addActionListener(new ButtonHandler());
+			
 
 //LAYOUT BUTTONS
 			GridBagConstraints gbc_btn1_delete = new GridBagConstraints();
@@ -170,6 +260,11 @@ public class GUI extends JFrame{
 			gbc_btn2_delete.gridx = 4;
 			gbc_btn2_delete.gridy = 0;
 			panel_2.add(btn2_delete, gbc_btn2_delete);
+			
+			GridBagConstraints gbc_btn3_filter = new GridBagConstraints();
+			gbc_btn3_filter.gridx = 5;
+			gbc_btn3_filter.gridy = 1;
+			panel_3.add(btn3_filter, gbc_btn3_filter);
 			
 //SETUP TEXTPANES
 			text1_amount.setEditable(false);
