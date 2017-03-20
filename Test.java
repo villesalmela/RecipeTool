@@ -1,12 +1,15 @@
 /*
 TODO:
-Improve coding practices:
+Improve:
 	Coherent and uniform type settings
 	Descriptive commenting
 	Consistent naming of methods, variables, objects and classes
+	Error handling
+	Better layout & visuals for GUI
 
 New features:
-	Database implementation
+	Recipe enough GUI
+	Database integration
 	Add/modify (ingredients & recipes) in GUI
 	Implement recipe filtering	
 */
@@ -24,8 +27,7 @@ public class Test {
 		Unit unit = Unit.L;
 		Date e = DateFormat.getDateInstance().parse("1.1.2017");
 		TreeSet<String> a = new TreeSet<String>();
-		a.add("ddd");
-		a.add("aaa");
+		a.add("laktoosi");
 		
 		Storage.setIngredient(iname, amount, unit, a, e);
 		
@@ -35,8 +37,8 @@ public class Test {
 		unit = Unit.KG;
 		e = DateFormat.getDateInstance().parse("2.2.2017");
 		a = new TreeSet<String>();
-		a.add("ccc");
-		a.add("bbb");
+		a.add("suklaa");
+
 		
 		Storage.setIngredient(iname, amount, unit, a, e);
 		
@@ -55,19 +57,19 @@ public class Test {
 		unit = Unit.KG;
 		e = DateFormat.getDateInstance().parse("3.3.2017");
 		a = new TreeSet<String>();
-		a.add("eee");
-		a.add("fff");
+		a.add("gluteeni");
+
 		
 		Storage.setIngredient(iname, amount, unit, a, e);
 		
 //SET INGREDIENT 4
-		iname = "muna";
+		iname = "kananmuna";
 		amount = 40.0;
 		unit = Unit.PCS;
 		e = DateFormat.getDateInstance().parse("4.4.2017");
 		a = new TreeSet<String>();
-		a.add("ggg");
-		a.add("hhh");
+		a.add("keltuainen");
+
 		
 		Storage.setIngredient(iname, amount, unit, a, e);
 		
@@ -75,8 +77,8 @@ public class Test {
 		rname = "taikina";
 		instruction = "taikina-ohje";
 		ingredient = new LinkedHashMap<String, Double>();
-		ingredient.put("jauho", 7.1);
-		ingredient.put("muna", 8.1);
+		ingredient.put("jauho", 700.1);
+		ingredient.put("kananmuna", 8.1);
 		
 		Book.setRecipe(rname, instruction, ingredient);
 

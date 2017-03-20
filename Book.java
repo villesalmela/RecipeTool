@@ -50,16 +50,24 @@ public class Book {
 		}
 		return temp;
 	}
-	public static Date getExpiration(String rname) {								//get the closest expiration date
+	public static Object[] getExpiration(String rname) {								//get the closest expiration date
+		String temp = null;
 		Date expiration = null;														//	for any ingredient in one recipe
 		for (String iname : ingredients.get(rname).keySet()){
 			if (Storage.getExpiration(iname) == null) continue;
-			else if (expiration == null) expiration = Storage.getExpiration(iname);
-			else if (expiration.after(Storage.getExpiration(iname))) expiration = Storage.getExpiration(iname);
+			else if (expiration == null) {
+				expiration = Storage.getExpiration(iname);
+				temp = iname;
+			}
+			else if (expiration.after(Storage.getExpiration(iname))){
+				expiration = Storage.getExpiration(iname);
+				temp = iname;
+			}
 		}
-		return expiration;
+		Object[] pair = new Object[]{expiration, temp};
+		return pair;
 	}
-	public static boolean getEnough(String rname) {									//true if enough ingredients in storage
+	public static Boolean getEnough(String rname) {									//true if enough ingredients in storage
 		boolean enough = true;														//	false if NOT enough ingredients in storage
 		for (String iname : ingredients.get(rname).keySet()){
 			if (getAmount(rname, iname) > Storage.getAmount(iname)) enough = false;

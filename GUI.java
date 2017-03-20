@@ -19,6 +19,9 @@ public class GUI extends JFrame{
 	private JList<String> list2_recipes = new JList<String>();
 	private JTextPane text2_ingredients = new JTextPane();
 	private JTextPane text2_instruction = new JTextPane();
+	private JTextPane text2_allergens = new JTextPane();
+	private JTextPane text2_expiration = new JTextPane();
+	private JLabel lbl2_enoughValue = new JLabel("");
 	private JButton btn2_delete = new JButton("Delete recipe");
 	
 	private JButton btn3_filter = new JButton("Filter");
@@ -37,7 +40,7 @@ public class GUI extends JFrame{
 
 			setResizable(false);
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
-			setBounds(0,0,750,750);
+			setBounds(0,0,1000,1000);
 			setLocationRelativeTo(null);
 			getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
 			
@@ -55,9 +58,9 @@ public class GUI extends JFrame{
 			panel_1.setLayout(gbl_panel_1);
 			
 			GridBagLayout gbl_panel_2 = new GridBagLayout();
-			gbl_panel_2.columnWidths = new int[]{1, 98, 132, 114, 80, 0};
+			gbl_panel_2.columnWidths = new int[]{1, 146, 157, 160, 109, 118, 0, 0};
 			gbl_panel_2.rowHeights = new int[]{25, 190, 0};
-			gbl_panel_2.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+			gbl_panel_2.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 			gbl_panel_2.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 			panel_2.setLayout(gbl_panel_2);
 			
@@ -105,10 +108,6 @@ public class GUI extends JFrame{
 			gbc_cbox3_avoidAllergens.gridy = 1;
 			panel_3.add(cbox3_avoidAllergens, gbc_cbox3_avoidAllergens);
 			
-			
-
-			
-			
 //CREATE RADIO BUTTONS
 			JRadioButton rdbtn3_az = new JRadioButton("A-Z");
 			JRadioButton rdbtn3_expiration = new JRadioButton("Expiration date");
@@ -134,6 +133,9 @@ public class GUI extends JFrame{
 			
 			JLabel lbl2_ingredients = new JLabel("Ingredients");
 			JLabel lbl2_insturctions = new JLabel("Insturctions");
+			JLabel lbl2_allergens = new JLabel("Allergens");
+			JLabel lbl2_expiration = new JLabel("Expiration");
+			JLabel lbl2_enough = new JLabel("Enough");
 			
 			JLabel lbl3_mustHave = new JLabel("Must have ingredients");
 			JLabel lbl3_noShopping = new JLabel("No shopping");
@@ -148,6 +150,10 @@ public class GUI extends JFrame{
 			
 			lbl2_ingredients.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			lbl2_insturctions.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lbl2_allergens.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lbl2_expiration.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lbl2_enough.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			lbl2_enoughValue.setFont(new Font("Tahoma", Font.PLAIN, 13));
 			
 			lbl3_mustHave.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			lbl3_noShopping.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -173,11 +179,11 @@ public class GUI extends JFrame{
 			gbc_lbl1_allergens.gridy = 0;
 			panel_1.add(lbl1_allergens, gbc_lbl1_allergens);
 				
-			GridBagConstraints gbc_lblExpiration = new GridBagConstraints();
-			gbc_lblExpiration.insets = new Insets(0, 0, 5, 5);
-			gbc_lblExpiration.gridx = 4;
-			gbc_lblExpiration.gridy = 0;
-			panel_1.add(lbl1_expiration, gbc_lblExpiration);
+			GridBagConstraints gbc_lbl1_expiration = new GridBagConstraints();
+			gbc_lbl1_expiration.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl1_expiration.gridx = 4;
+			gbc_lbl1_expiration.gridy = 0;
+			panel_1.add(lbl1_expiration, gbc_lbl1_expiration);
 			
 			GridBagConstraints gbc_lbl2_ingredients = new GridBagConstraints();
 			gbc_lbl2_ingredients.insets = new Insets(0, 0, 5, 5);
@@ -190,6 +196,31 @@ public class GUI extends JFrame{
 			gbc_lbl2_insturctions.gridx = 2;
 			gbc_lbl2_insturctions.gridy = 0;
 			panel_2.add(lbl2_insturctions, gbc_lbl2_insturctions);
+			
+			GridBagConstraints gbc_lbl2_allergens = new GridBagConstraints();
+			gbc_lbl2_allergens.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl2_allergens.gridx = 3;
+			gbc_lbl2_allergens.gridy = 0;
+			panel_2.add(lbl2_allergens, gbc_lbl2_allergens);
+
+			GridBagConstraints gbc_lbl2_expiration = new GridBagConstraints();
+			gbc_lbl2_expiration.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl2_expiration.gridx = 4;
+			gbc_lbl2_expiration.gridy = 0;
+			panel_2.add(lbl2_expiration, gbc_lbl2_expiration);
+			
+			GridBagConstraints gbc_lbl2_enough = new GridBagConstraints();
+			gbc_lbl2_enough.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl2_enough.gridx = 5;
+			gbc_lbl2_enough.gridy = 0;
+			panel_2.add(lbl2_enough, gbc_lbl2_enough);
+			
+			GridBagConstraints gbc_lbl2_enoughValue = new GridBagConstraints();
+			gbc_lbl2_enoughValue.anchor = GridBagConstraints.NORTH;
+			gbc_lbl2_enoughValue.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl2_enoughValue.gridx = 5;
+			gbc_lbl2_enoughValue.gridy = 1;
+			panel_2.add(lbl2_enoughValue, gbc_lbl2_enoughValue);
 			
 			GridBagConstraints gbc_lbl3_mustHave = new GridBagConstraints();
 			gbc_lbl3_mustHave.fill = GridBagConstraints.HORIZONTAL;
@@ -226,19 +257,21 @@ public class GUI extends JFrame{
 			
 //LAYOUT LISTS
 			GridBagConstraints gbc_list1_ingredients = new GridBagConstraints();
-			gbc_list1_ingredients.fill = GridBagConstraints.BOTH;
+			gbc_list1_ingredients.anchor = GridBagConstraints.NORTH;
+			gbc_list1_ingredients.fill = GridBagConstraints.HORIZONTAL;
 			gbc_list1_ingredients.insets = new Insets(0, 0, 0, 5);
 			gbc_list1_ingredients.gridheight = 2;
 			gbc_list1_ingredients.gridx = 5;
-			gbc_list1_ingredients.gridy = 0;
+			gbc_list1_ingredients.gridy = 1;
 			panel_1.add(list1_ingredients, gbc_list1_ingredients);
 			
 			GridBagConstraints gbc_list2_recipes = new GridBagConstraints();
+			gbc_list2_recipes.anchor = GridBagConstraints.NORTH;
 			gbc_list2_recipes.gridheight = 2;
-			gbc_list2_recipes.fill = GridBagConstraints.BOTH;
+			gbc_list2_recipes.fill = GridBagConstraints.HORIZONTAL;
 			gbc_list2_recipes.insets = new Insets(0, 0, 0, 5);
-			gbc_list2_recipes.gridx = 3;
-			gbc_list2_recipes.gridy = 0;
+			gbc_list2_recipes.gridx = 6;
+			gbc_list2_recipes.gridy = 1;
 			panel_2.add(list2_recipes, gbc_list2_recipes);
 			
 //SETUP BUTTONS
@@ -255,9 +288,9 @@ public class GUI extends JFrame{
 			panel_1.add(btn1_delete, gbc_btn1_delete);
 			
 			GridBagConstraints gbc_btn2_delete = new GridBagConstraints();
-			gbc_btn2_delete.insets = new Insets(0, 0, 5, 5);
+			gbc_btn2_delete.insets = new Insets(0, 0, 5, 0);
 			gbc_btn2_delete.anchor = GridBagConstraints.NORTHWEST;
-			gbc_btn2_delete.gridx = 4;
+			gbc_btn2_delete.gridx = 7;
 			gbc_btn2_delete.gridy = 0;
 			panel_2.add(btn2_delete, gbc_btn2_delete);
 			
@@ -322,6 +355,22 @@ public class GUI extends JFrame{
 			gbc_text2_instruction.gridx = 2;
 			gbc_text2_instruction.gridy = 1;
 			panel_2.add(text2_instruction, gbc_text2_instruction);
+			
+			GridBagConstraints gbc_text2_allergens = new GridBagConstraints();
+			gbc_text2_allergens.fill = GridBagConstraints.HORIZONTAL;
+			gbc_text2_allergens.anchor = GridBagConstraints.NORTH;
+			gbc_text2_allergens.insets = new Insets(0, 0, 0, 5);
+			gbc_text2_allergens.gridx = 3;
+			gbc_text2_allergens.gridy = 1;
+			panel_2.add(text2_allergens, gbc_text2_allergens);
+			
+			GridBagConstraints gbc_text2_expiration = new GridBagConstraints();
+			gbc_text2_expiration.fill = GridBagConstraints.HORIZONTAL;
+			gbc_text2_expiration.anchor = GridBagConstraints.NORTH;
+			gbc_text2_expiration.insets = new Insets(0, 0, 0, 5);
+			gbc_text2_expiration.gridx = 4;
+			gbc_text2_expiration.gridy = 1;
+			panel_2.add(text2_expiration, gbc_text2_expiration);
 		}
 
 
@@ -355,10 +404,14 @@ public class GUI extends JFrame{
 				if (rname == null) return;
 				for (String iname : Book.listIngredients(rname)){
 					if (Book.hasIngredient(rname, iname) == false) continue;
-					temp = String.join("",temp,"\n",Book.getAmount(rname, iname).toString()," ",Storage.getUnit(iname).toString()," ",iname,"\n");
+					temp = String.join("",temp,Book.getAmount(rname, iname).toString()," ",Storage.getUnit(iname).toString()," ",iname,"\n");
 				}
+				temp = temp.trim();
 				text2_ingredients.setText(temp);
 				text2_instruction.setText(Book.getInsturction(rname));
+				text2_allergens.setText(Book.getAllergens(rname).toString());
+				text2_expiration.setText(String.join("",DateFormat.getDateInstance().format(Book.getExpiration(rname)[0])," ",(String) Book.getExpiration(rname)[1]));
+				lbl2_enoughValue.setText(Book.getEnough(rname).toString());
 			}
 		}//end valueChanged
 		
@@ -377,12 +430,21 @@ public class GUI extends JFrame{
 				Book.deleteAllIngredient(iname);
 				list1_ingredients.setListData(Storage.listIngredients());
 				list2_recipes.setListData(Book.listRecipes());
+				
+				text1_unit.setText("");
+				text1_amount.setText("");
+				text1_allergens.setText("");
+				text1_expiration.setText("");
 			}
 			if (e.getSource() == btn2_delete){
 				String rname = list2_recipes.getSelectedValue();
 				if (rname == null) notice("Notice","You must first select a recipe.");
 				Book.deleteRecipe(rname);
 				list2_recipes.setListData(Book.listRecipes());
+				text2_ingredients.setText("");
+				text2_instruction.setText("");
+				text2_allergens.setText("");
+				text2_expiration.setText("");
 			}
 		}
 		
