@@ -51,8 +51,8 @@ public class Book {
 		return temp;
 	}
 	public static Object[] getExpiration(String rname) {								//get the closest expiration date
-		String temp = null;
-		Date expiration = null;														//	for any ingredient in one recipe
+		String temp = null;																//	and the name of this ingredient
+		Date expiration = null;														
 		for (String iname : ingredients.get(rname).keySet()){
 			if (Storage.getExpiration(iname) == null) continue;
 			else if (expiration == null) {
@@ -79,6 +79,26 @@ public class Book {
 	}
 	public static Double getAmount(String rname, String iname){						//get amount of one ingredient in one recipe
 		return ingredients.get(rname).get(iname);
+	}
+	public static Vector<String> filterRecipes(List<String> mustHave, List<String> avoidAllergens, boolean enough){
+		Vector<String> temp = new Vector<String>();
+		temp.addAll(listRecipes());
+		for (String rname : listRecipes()){
+			if (!(mustHave.isEmpty())){
+				if (!(listIngredients(rname).containsAll(mustHave))) temp.remove(rname);
+			}
+			if (!(avoidAllergens.isEmpty())){
+				for (String allergen : avoidAllergens){
+					if (getAllergens(rname).contains(allergen)) temp.remove(rname);
+				}
+			}
+			if (enough){
+				for (String iname : listIngredients(rname)){
+					if(Storage.getAmount(iname) < getAmount(rname, iname)) temp.remove(rname);
+				}
+			}
+		}
+		return temp;
 	}
 
 	

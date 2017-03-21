@@ -31,6 +31,13 @@ public class Storage {
 		temp.addAll(units.keySet());
 		return temp;
 	}
+	public static Vector<String> listAllergens(){
+		Vector<String> temp = new Vector<String>();
+		for(String iname : listIngredients()){
+			temp.addAll(getAllergens(iname));
+		}
+		return temp;
+	}
 	public static Double getAmount(String name){							//get amount (in storage) of specified ingredient
 		return amounts.get(name);
 	}
