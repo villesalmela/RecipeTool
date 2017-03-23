@@ -1,5 +1,6 @@
 package recipeTool;
 
+import javax.swing.CellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -10,6 +11,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -17,7 +19,6 @@ import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -27,10 +28,12 @@ import java.awt.event.ActionListener;
 import java.awt.FlowLayout;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SpinnerDateModel;
+import java.util.Calendar;
 
 
 
@@ -70,6 +73,8 @@ public class GUI extends JFrame{
 			private JTextPane text2_allergens = new JTextPane();
 			private JTextPane text2_expiration = new JTextPane();
 			
+			private JTextPane text2a_instruction = new JTextPane();
+			
 	//LABELS
 			private JLabel lbl1_amount= new JLabel("Amount");
 			private JLabel lbl1_unit = new JLabel("Unit");
@@ -102,14 +107,18 @@ public class GUI extends JFrame{
 			private JLabel lbl3_sortBy = new JLabel("Sort by");
 			
 	//BUTTONS
-			private JButton btn1_delete = new JButton("Delete ingredient");
-			private JButton btn2_delete = new JButton("Delete recipe");
 			private JButton btn1_add = new JButton("Add ingredient");
+			private JButton btn1_delete = new JButton("Delete ingredient");
+			
 			private JButton btn2_add = new JButton("Add recipe");
+			private JButton btn2_delete = new JButton("Delete recipe");
+			
 			private JButton btn1a_ok = new JButton("Add to Storage");
-			private JButton btn2a_ok = new JButton("Add to Book");
 			private JButton btn1a_cancel = new JButton("Cancel");
+			
+			private JButton btn2a_ok = new JButton("Add to Book");
 			private JButton btn2a_cancel = new JButton("Cancel");
+			
 			private JButton btn3_filter = new JButton("Filter");
 			private JButton btn3_resetFilter = new JButton("Reset Filter");
 			
@@ -120,27 +129,27 @@ public class GUI extends JFrame{
 			private JRadioButton rdbtn3_az = new JRadioButton("A-Z");
 			private JRadioButton rdbtn3_expiration = new JRadioButton("Expiration date");
 			
-	//TEXTFIELD
-			private JTextField txtf1a_name = new JTextField("name");
-			private JTextField txtf1a_amount = new JTextField("amount");
-			//private JTextField txtf1a_allergens = new JTextField("allergens");
-			private JTextField txtf1a_expiration = new JTextField("expiration");
+	//TEXTFIELDS
+			private JTextField txtf1a_name = new JTextField("");
+			private JTextField txtf2a_name = new JTextField("");
 			
-			private JTextField txtf2a_name = new JTextField("name");
-			private JTextField txtf2a_instruction = new JTextField("instruction");
-			private JTextField txtf2a_amount = new JTextField("amount");
+	//TABLE
+			private JTable table1a_allergens = new JTable(new Object[10][1], new String[]{"allergens"});
+			
+	//SPINNERS
+			private JSpinner spin1a_amount = new JSpinner();
+			private JSpinner spin1a_expiration = new JSpinner();
+			private JSpinner spin2a_amount = new JSpinner();
+			
 			
 	//COMBOBOXES
-			private JComboBox<String> combx1a_unit = new JComboBox(Unit.values());
-			private JComboBox<String> combx2a_ingredient = new JComboBox<String>(Storage.listIngredients());
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			private JComboBox<Unit> combx1a_unit = new JComboBox(Unit.values());
+			private JComboBox<String> combx2a_ingredient = new JComboBox<String>();
 			
-	//FILTERING
+	//STATE-VARIABLES
 			private boolean filteringActive = false;
 			
-			Object[][] tempTable = new Object[4][4];
-			String[] tempArray = new String[]{""};
-			JTable txtf1a_allergens = new JTable(tempTable, tempArray);
-
 	public GUI(){
 //CONFIG *******************************************************************************************************************************
 			super("recipeTool");
@@ -161,9 +170,12 @@ public class GUI extends JFrame{
 			getContentPane().add(iframe1_add);
 			getContentPane().add(iframe2_add);
 			
-			iframe1_add.setVisible(true);
-			iframe2_add.setVisible(true);
-		
+	//RADIO BUTTONS
+			rdbtn3_az.setSelected(true);
+			rdbtn3_az.addActionListener(new ButtonHandler());
+			rdbtn3_expiration.setSelected(false);
+			rdbtn3_expiration.addActionListener(new ButtonHandler());
+			
 	//LABELS
 			lbl1_amount.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			lbl1_unit.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -186,13 +198,13 @@ public class GUI extends JFrame{
 			
 	//LISTS
 			list1_ingredients.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			populateList(1);
 			list1_ingredients.addListSelectionListener(new ListHandler());
 			
 			list2_recipes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			populateList(2);
 			list2_recipes.addListSelectionListener(new ListHandler());
-
+			
+			populateList(1);
+			populateList(2);
 			populateList(3);
 		
 	//BUTTONS
@@ -221,15 +233,24 @@ public class GUI extends JFrame{
 			text2_allergens.setEditable(false);
 			text2_expiration.setEditable(false);
 			
-
+	//SPINNERS
+			spin1a_amount.setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.01));
+			spin1a_amount.setEditor(new JSpinner.NumberEditor(spin1a_amount, "###.##"));
+			
+			spin1a_expiration.setModel(new SpinnerDateModel(new Date(), new Date(946677600921L), new Date(32535122400921L), Calendar.DAY_OF_YEAR));
+			spin1a_expiration.setEditor(new JSpinner.DateEditor(spin1a_expiration, "d.M.y"));
+			
+			spin2a_amount.setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.01));
+			spin2a_amount.setEditor(new JSpinner.NumberEditor(spin2a_amount, "###.##"));
+			
 //GRIDBAG LAYOUT ***********************************************************************************************************************
 	
 	//PANELS
 			GridBagLayout gbl_iframe1_add = new GridBagLayout();
 			gbl_iframe1_add.columnWidths = new int[]{10, 100, 100, 100, 100, 100, 10};
-			gbl_iframe1_add.rowHeights = new int[]{10, 20, 30, 30, 10};
+			gbl_iframe1_add.rowHeights = new int[]{10, 20, 30, 30, 0, 0, 0, 0, 0, 0, 0, 10};
 			gbl_iframe1_add.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-			gbl_iframe1_add.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE, 0.0};
+			gbl_iframe1_add.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 			iframe1_add.getContentPane().setLayout(gbl_iframe1_add);
 			
 			GridBagLayout gbl_iframe2_add = new GridBagLayout();
@@ -275,6 +296,37 @@ public class GUI extends JFrame{
 			gbc_combx2a_ingredient.gridy = 2;
 			iframe2_add.getContentPane().add(combx2a_ingredient, gbc_combx2a_ingredient);
 			
+	//SPINNERS
+			GridBagConstraints gbc_spin1a_amount = new GridBagConstraints();
+			gbc_spin1a_amount.fill = GridBagConstraints.HORIZONTAL;
+			gbc_spin1a_amount.insets = new Insets(0, 0, 5, 5);
+			gbc_spin1a_amount.gridx = 2;
+			gbc_spin1a_amount.gridy = 2;
+			iframe1_add.getContentPane().add(spin1a_amount, gbc_spin1a_amount);
+			
+			GridBagConstraints gbc_spin1a_expiration = new GridBagConstraints();
+			gbc_spin1a_expiration.fill = GridBagConstraints.HORIZONTAL;
+			gbc_spin1a_expiration.insets = new Insets(0, 0, 5, 5);
+			gbc_spin1a_expiration.gridx = 5;
+			gbc_spin1a_expiration.gridy = 2;
+			iframe1_add.getContentPane().add(spin1a_expiration, gbc_spin1a_expiration);
+			
+			GridBagConstraints gbc_spin2a_amount = new GridBagConstraints();
+			gbc_spin2a_amount.fill = GridBagConstraints.HORIZONTAL;
+			gbc_spin2a_amount.insets = new Insets(0, 0, 5, 5);
+			gbc_spin2a_amount.gridx = 3;
+			gbc_spin2a_amount.gridy = 2;
+			iframe2_add.getContentPane().add(spin2a_amount, gbc_spin2a_amount);
+			
+	//TABLES
+			GridBagConstraints gbc_table1a_allergens = new GridBagConstraints();
+			gbc_table1a_allergens.gridheight = 10;
+			gbc_table1a_allergens.fill = GridBagConstraints.BOTH;
+			gbc_table1a_allergens.insets = new Insets(0, 0, 5, 5);
+			gbc_table1a_allergens.gridx = 4;
+			gbc_table1a_allergens.gridy = 2;
+			iframe1_add.getContentPane().add(table1a_allergens, gbc_table1a_allergens);
+			
 	//TEXTFIELDS
 			GridBagConstraints gbc_txtf1a_name = new GridBagConstraints();
 			gbc_txtf1a_name.fill = GridBagConstraints.HORIZONTAL;
@@ -283,47 +335,12 @@ public class GUI extends JFrame{
 			gbc_txtf1a_name.gridy = 2;
 			iframe1_add.getContentPane().add(txtf1a_name, gbc_txtf1a_name);
 			
-			GridBagConstraints gbc_txtf1a_amount = new GridBagConstraints();
-			gbc_txtf1a_amount.fill = GridBagConstraints.HORIZONTAL;
-			gbc_txtf1a_amount.insets = new Insets(0, 0, 5, 5);
-			gbc_txtf1a_amount.gridx = 2;
-			gbc_txtf1a_amount.gridy = 2;
-			iframe1_add.getContentPane().add(txtf1a_amount, gbc_txtf1a_amount);
-			
-			GridBagConstraints gbc_txtf1a_allergens = new GridBagConstraints();
-			gbc_txtf1a_allergens.fill = GridBagConstraints.HORIZONTAL;
-			gbc_txtf1a_allergens.insets = new Insets(0, 0, 5, 5);
-			gbc_txtf1a_allergens.gridx = 4;
-			gbc_txtf1a_allergens.gridy = 2;
-			iframe1_add.getContentPane().add(txtf1a_allergens, gbc_txtf1a_allergens);
-			
-			GridBagConstraints gbc_txtf1a_expiration = new GridBagConstraints();
-			gbc_txtf1a_expiration.fill = GridBagConstraints.HORIZONTAL;
-			gbc_txtf1a_expiration.insets = new Insets(0, 0, 5, 5);
-			gbc_txtf1a_expiration.gridx = 5;
-			gbc_txtf1a_expiration.gridy = 2;
-			iframe1_add.getContentPane().add(txtf1a_expiration, gbc_txtf1a_expiration);
-			
 			GridBagConstraints gbc_txtf2a_name = new GridBagConstraints();
 			gbc_txtf2a_name.fill = GridBagConstraints.HORIZONTAL;
 			gbc_txtf2a_name.insets = new Insets(0, 0, 5, 5);
 			gbc_txtf2a_name.gridx = 1;
 			gbc_txtf2a_name.gridy = 2;
 			iframe2_add.getContentPane().add(txtf2a_name, gbc_txtf2a_name);
-			
-			GridBagConstraints gbc_txtf2a_amount = new GridBagConstraints();
-			gbc_txtf2a_amount.fill = GridBagConstraints.HORIZONTAL;
-			gbc_txtf2a_amount.insets = new Insets(0, 0, 5, 5);
-			gbc_txtf2a_amount.gridx = 3;
-			gbc_txtf2a_amount.gridy = 2;
-			iframe2_add.getContentPane().add(txtf2a_amount, gbc_txtf2a_amount);
-			
-			GridBagConstraints gbc_txtf2a_instruction = new GridBagConstraints();
-			gbc_txtf2a_instruction.fill = GridBagConstraints.HORIZONTAL;
-			gbc_txtf2a_instruction.insets = new Insets(0, 0, 5, 5);
-			gbc_txtf2a_instruction.gridx = 4;
-			gbc_txtf2a_instruction.gridy = 2;
-			iframe2_add.getContentPane().add(txtf2a_instruction, gbc_txtf2a_instruction);
 			
 	//TEXTPANES
 			GridBagConstraints gbc_text1_amount = new GridBagConstraints();
@@ -389,6 +406,14 @@ public class GUI extends JFrame{
 			gbc_text2_expiration.gridx = 4;
 			gbc_text2_expiration.gridy = 1;
 			panel_2.add(text2_expiration, gbc_text2_expiration);
+			
+			GridBagConstraints gbc_text2a_instruction = new GridBagConstraints();
+			gbc_text2a_instruction.gridheight = 9;
+			gbc_text2a_instruction.fill = GridBagConstraints.BOTH;
+			gbc_text2a_instruction.insets = new Insets(0, 0, 5, 5);
+			gbc_text2a_instruction.gridx = 4;
+			gbc_text2a_instruction.gridy = 2;
+			iframe2_add.getContentPane().add(text2a_instruction, gbc_text2a_instruction);
 			
 	//LABELS
 			GridBagConstraints gbc_lbl1_amount = new GridBagConstraints();
@@ -576,7 +601,7 @@ public class GUI extends JFrame{
 			
 			GridBagConstraints gbc_btn1a_ok = new GridBagConstraints();
 			gbc_btn1a_ok.gridwidth = 2;
-			gbc_btn1a_ok.insets = new Insets(0, 0, 5, 5);
+			gbc_btn1a_ok.insets = new Insets(0, 0, 5, 0);
 			gbc_btn1a_ok.gridx = 6;
 			gbc_btn1a_ok.gridy = 2;
 			iframe1_add.getContentPane().add(btn1a_ok, gbc_btn1a_ok);
@@ -699,6 +724,20 @@ public class GUI extends JFrame{
 					list3_avoidAllergens.clearSelection();
 					chckbx3_noShopping.setSelected(false);
 					break;
+				case 11:
+					txtf1a_name.setText("");
+					spin1a_amount.setValue(0);
+					spin1a_expiration.setValue(new Date());
+					table1a_allergens.clearSelection();
+					if(!(table1a_allergens.getCellEditor() == null)) table1a_allergens.getCellEditor().stopCellEditing();
+					for (int i = 0; i<10;i++){
+						table1a_allergens.setValueAt(null, i, 0);
+					}
+					break;
+				case 21:
+					txtf2a_name.setText("");
+					text2a_instruction.setText("");
+					spin2a_amount.setValue(0);
 			}
 		}
 		
@@ -713,7 +752,8 @@ public class GUI extends JFrame{
 						List<String> mustHave = list3_mustHave.getSelectedValuesList();
 						List<String> avoidAllergens = list3_avoidAllergens.getSelectedValuesList();
 						boolean enough = chckbx3_noShopping.isSelected();
-						list2_recipes.setListData(Book.filterRecipes(mustHave, avoidAllergens, enough));
+						boolean sort = rdbtn3_az.isSelected();
+						list2_recipes.setListData(Book.filterRecipes(mustHave, avoidAllergens, enough, sort));
 						break;
 					}
 					list2_recipes.setListData(Book.listRecipes());
@@ -734,7 +774,7 @@ public class GUI extends JFrame{
 					if(Storage.hasIngredient(iname)){
 						text1_unit.setText(Storage.getUnit(iname).toString());
 						text1_amount.setText(Storage.getAmount(iname).toString());
-						text1_allergens.setText(Storage.getAllergens(iname).toString());
+						text1_allergens.setText(String.join(", ",Storage.getAllergens(iname)));
 						text1_expiration.setText(DateFormat.getDateInstance().format(Storage.getExpiration(iname)));
 					}
 					break;
@@ -751,9 +791,15 @@ public class GUI extends JFrame{
 					
 					text2_ingredients.setText(temp);
 					text2_instruction.setText(Book.getInsturction(rname));
-					text2_allergens.setText(Book.getAllergens(rname).toString());
+					text2_allergens.setText(String.join(", ", Book.getAllergens(rname)));
 					text2_expiration.setText(String.join("",DateFormat.getDateInstance().format(Book.getExpiration(rname)[0])," ",(String) Book.getExpiration(rname)[1]));
 					lbl2_enoughValue.setText(Book.getEnough(rname).toString());
+					break;
+				case 21:
+					combx2a_ingredient.removeAllItems();
+					for (String i : Storage.listIngredients()){
+						combx2a_ingredient.addItem(i);
+					}
 			}
 		}
 	
@@ -793,6 +839,7 @@ public class GUI extends JFrame{
 					Book.deleteAllIngredient(iname);
 					
 					populateList(1);
+					populateList(3);
 					clearFields(1);
 					populateFields(2);
 				}
@@ -816,6 +863,7 @@ public class GUI extends JFrame{
 				}
 				
 				if (source == btn2_add){
+					populateFields(21);
 					iframe2_add.setVisible(true);
 				}
 				
@@ -837,42 +885,57 @@ public class GUI extends JFrame{
 				}
 				
 				if (source == btn1a_cancel){
+					clearFields(11);
 					iframe1_add.setVisible(false);
 				}
 				
 				if (source == btn2a_cancel){
+					clearFields(21);
 					iframe2_add.setVisible(false);
 				}
 				
 				if (source == btn1a_ok){
-					/*
-					String name = txtf1a_name.getText();
-					double amount = Double.parseDouble(txtf1a_amount.getText());
-					Unit unit = (Unit) combx1a_unit.getSelectedItem();
-					String temp = txtf1a_allergens.getText();
-					TreeSet<String> allergen = new TreeSet<String>();
-					for(String temp2 : temp.split(",")){
-						allergen.add(temp2);
-					}
-					Date expiration = null;
-					try {
-						expiration = DateFormat.getDateInstance().parse(txtf1a_expiration.getText());
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
 					
+					String name = txtf1a_name.getText();
+					double amount = (double) spin1a_amount.getModel().getValue();
+					Unit unit = (Unit) combx1a_unit.getSelectedItem();
+					TreeSet<String> allergen = new TreeSet<String>();
+					String temp;
+					
+					for (int i = 0; i<10; i++){
+						temp = (String)table1a_allergens.getValueAt(i, 0);
+						if (!(temp==null)) allergen.add(temp);
+					}	
+					
+					Date expiration = null;
+					expiration = (Date) spin1a_expiration.getValue();
+					if (table1a_allergens.isEditing()){
+						CellEditor temp2 = table1a_allergens.getCellEditor();
+						table1a_allergens.getCellEditor().stopCellEditing();
+						String unfinished = (String) temp2.getCellEditorValue();
+						if (!(unfinished == null)) allergen.add(unfinished);
+					}
 					Storage.setIngredient(name, amount, unit, allergen, expiration);
 					populateList(1);
-					*/
+					populateList(3);
+					clearFields(11);
+					
 					iframe1_add.setVisible(false);
 				}
 				
 				if (source == btn2a_ok){
+					clearFields(21);
+					populateList(2);
 					iframe2_add.setVisible(false);
-					for (int i=0; i<4; i++){
-						System.out.println(txtf1a_allergens.getValueAt(i, 0));
-					}
+				}
+				
+				if (source == rdbtn3_az){
+					rdbtn3_az.setSelected(true);
+					rdbtn3_expiration.setSelected(false);
+				}
+				if (source == rdbtn3_expiration){
+					rdbtn3_az.setSelected(false);
+					rdbtn3_expiration.setSelected(true);
 				}
 			}
 		}

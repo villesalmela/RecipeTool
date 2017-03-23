@@ -1,55 +1,70 @@
 package recipeTool;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 public class Book {
 	
 //PROPERTIES
+	private static Set<String> recipes = new TreeSet<String>();
 	private static Map<String, String> instructions = new HashMap<String, String>();
 	private static Map<String, LinkedHashMap<String, Double>> ingredients = new HashMap<String, LinkedHashMap<String, Double>>();
 
 	
 //CREATE & DELETE
 	public static void setRecipe(String name, String instruction, LinkedHashMap<String, Double> ingredient){		//build new recipe from scratch
+		recipes.add(name);
 		instructions.put(name, instruction);
 		ingredients.put(name, ingredient);
 	}
+	
+	
 	public static void deleteRecipe(String name){									//delete entire recipe
+		recipes.remove(name);
 		instructions.remove(name);
 		ingredients.remove(name);
 	}
+	
+	
 	public static void deleteIngredient(String rname, String iname){				//delete one ingredient in one recipe
 		ingredients.get(rname).remove(iname);
 	}
+	
+	
 	public static void deleteAllIngredient(String iname){							//delete one ingredient in all recipes
-		for (String rname : listRecipes()){
+		for (String rname : recipes){
 			ingredients.get(rname).remove(iname);
 		}
 	}
 	
 	
 //GETTERS
-	public static Vector<String> listRecipes(){										//get list of all recipes in A-Z order
-		Vector<String> temp = new Vector<String>();
-		temp.addAll(ingredients.keySet());
-		return temp;
+	public static String[] listRecipes(){										//get list of all recipes in A-Z order
+		return recipes.toArray(new String[0]);
 	}
-	public static LinkedHashSet<String> listIngredients(String name) {				//get list of ingredients in one recipe
-		LinkedHashSet<String> temp = new LinkedHashSet<String>();					//	in user defined order
-		temp.addAll(ingredients.get(name).keySet());
-		return temp;
+	
+	
+	public static String[] listIngredients(String name) {				//get list of ingredients in one recipe
+		return ingredients.get(name).keySet().toArray(new String[0]);
 	}
+	
+	
 	public static boolean hasIngredient(String rname, String iname){				//true, if recipe has specified ingredient
 		boolean has = false;
-		if (listIngredients(rname).contains(iname)) has = true;
+		if (ingredients.get(rname).keySet().contains(iname)) has = true;
 		return has;
 	}
-	public static TreeSet<String> getAllergens(String rname){						//get list of all allergens in one recipe
+	
+	
+	public static String[] getAllergens(String rname){						//get list of all allergens in one recipe
 		TreeSet<String> temp = new TreeSet<String>();								//	in A-Z order
 		for (String iname : ingredients.get(rname).keySet()){
-			temp.addAll(Storage.getAllergens(iname));
+			temp.addAll(Arrays.asList(Storage.getAllergens(iname)));
 		}
-		return temp;
+		return temp.toArray(new String[0]);
 	}
+	
+	
 	public static Object[] getExpiration(String rname) {								//get the closest expiration date
 		String temp = null;																//	and the name of this ingredient
 		Date expiration = null;														
@@ -67,6 +82,8 @@ public class Book {
 		Object[] pair = new Object[]{expiration, temp};
 		return pair;
 	}
+
+	
 	public static Boolean getEnough(String rname) {									//true if enough ingredients in storage
 		boolean enough = true;														//	false if NOT enough ingredients in storage
 		for (String iname : ingredients.get(rname).keySet()){
@@ -74,31 +91,39 @@ public class Book {
 		}
 		return enough;
 	}
+	
+	
 	public static String getInsturction(String name){								//get instruction for one recipe
 		return instructions.get(name);
 	}
+	
+	
 	public static Double getAmount(String rname, String iname){						//get amount of one ingredient in one recipe
-		return ingredients.get(rname).get(iname);
+		return new BigDecimal(ingredients.get(rname).get(iname)).setScale(2, RoundingMode.HALF_UP).doubleValue();
 	}
-	public static Vector<String> filterRecipes(List<String> mustHave, List<String> avoidAllergens, boolean enough){
-		Vector<String> temp = new Vector<String>();
-		temp.addAll(listRecipes());
-		for (String rname : listRecipes()){
+	
+	
+	public static String[] filterRecipes(List<String> mustHave, List<String> avoidAllergens, boolean enough, boolean sort){
+		List<String> temp = new ArrayList<String>();
+		temp.addAll(Arrays.asList(listRecipes()));
+		for (String rname : recipes){
 			if (!(mustHave.isEmpty())){
-				if (!(listIngredients(rname).containsAll(mustHave))) temp.remove(rname);
+				if (!(ingredients.get(rname).keySet().containsAll(mustHave))) temp.remove(rname);
 			}
 			if (!(avoidAllergens.isEmpty())){
 				for (String allergen : avoidAllergens){
-					if (getAllergens(rname).contains(allergen)) temp.remove(rname);
+					if (Arrays.asList(getAllergens(rname)).contains(allergen)) temp.remove(rname);
 				}
 			}
 			if (enough){
-				for (String iname : listIngredients(rname)){
+				for (String iname : ingredients.get(rname).keySet()){
 					if(Storage.getAmount(iname) < getAmount(rname, iname)) temp.remove(rname);
 				}
 			}
 		}
-		return temp;
+		if (sort) Collections.sort(temp);
+		else Collections.sort(temp, new Expiry());
+		return temp.toArray(new String[0]);
 	}
 
 	
@@ -106,12 +131,9 @@ public class Book {
 	public static void setInstruction(String name, String instruction){				//replace old instruction with new one
 		instructions.put(name, instruction);
 	}
+	
+	
 	public static void setIngredient(String rname, String iname, double amount){	//add new ingredient to existing recipe
 		ingredients.get(rname).put(iname, amount);
 	}
-
-	
-
-
-
 }
