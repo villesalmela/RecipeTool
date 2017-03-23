@@ -29,6 +29,7 @@ import java.awt.FlowLayout;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
 import javax.swing.SpinnerNumberModel;
@@ -99,7 +100,7 @@ public class GUI extends JFrame{
 			private JLabel lbl2a_instruction = new JLabel("Instruction");
 			private JLabel lbl2a_ingredient = new JLabel("Ingredient");
 			private JLabel lbl2a_amount = new JLabel("Amount");
-			private JLabel lbl2a_unit = new JLabel("");
+			private JLabel lbl2a_unit = new JLabel("placeholder");
 			
 			private JLabel lbl3_mustHave = new JLabel("Must have ingredients");
 			private JLabel lbl3_noShopping = new JLabel("No shopping");
@@ -118,6 +119,7 @@ public class GUI extends JFrame{
 			
 			private JButton btn2a_ok = new JButton("Add to Book");
 			private JButton btn2a_cancel = new JButton("Cancel");
+			private JButton btn2a_more = new JButton("Add Row");
 			
 			private JButton btn3_filter = new JButton("Filter");
 			private JButton btn3_resetFilter = new JButton("Reset Filter");
@@ -150,13 +152,21 @@ public class GUI extends JFrame{
 	//STATE-VARIABLES
 			private boolean filteringActive = false;
 			
+			private int iframe2_temp_counter=0;
+			private JComboBox<String>[] iframe2_temp_combx = new JComboBox[10];
+			private GridBagConstraints[] iframe2_temp_GBC1 = new GridBagConstraints[10];
+			private JSpinner[] iframe2_temp_spin = new JSpinner[10];
+			private GridBagConstraints[] iframe2_temp_GBC2 = new GridBagConstraints[10];
+			private JLabel[] iframe2_temp_lbl = new JLabel[10];
+			private GridBagConstraints[] iframe2_temp_GBC3 = new GridBagConstraints[10];
+			
 	public GUI(){
 //CONFIG *******************************************************************************************************************************
 			super("recipeTool");
 			
 			setResizable(false);
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
-			setBounds(0,0,1000,1000);
+			setBounds(0,0,1000,450);
 			setLocationRelativeTo(null);
 			getContentPane().setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 			
@@ -216,7 +226,9 @@ public class GUI extends JFrame{
 			btn2_delete.addActionListener(new ButtonHandler());
 			btn2_add.addActionListener(new ButtonHandler());
 			btn2a_ok.addActionListener(new ButtonHandler());
+			combx2a_ingredient.addActionListener(new ButtonHandler());
 			btn2a_cancel.addActionListener(new ButtonHandler());
+			btn2a_more.addActionListener(new ButtonHandler());
 			
 			btn3_filter.addActionListener(new ButtonHandler());
 			btn3_resetFilter.addActionListener(new ButtonHandler());
@@ -254,21 +266,21 @@ public class GUI extends JFrame{
 			iframe1_add.getContentPane().setLayout(gbl_iframe1_add);
 			
 			GridBagLayout gbl_iframe2_add = new GridBagLayout();
-			gbl_iframe2_add.columnWidths = new int[]{10, 100, 100, 100, 100, 10};
+			gbl_iframe2_add.columnWidths = new int[]{10, 100, 100, 100, 0, 100, 10};
 			gbl_iframe2_add.rowHeights = new int[]{10, 20, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 10};
-			gbl_iframe2_add.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+			gbl_iframe2_add.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 			gbl_iframe2_add.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
 			iframe2_add.getContentPane().setLayout(gbl_iframe2_add);
 			
 			GridBagLayout gbl_panel_1 = new GridBagLayout();
-			gbl_panel_1.columnWidths = new int[]{0, 68, 47, 84, 75, 93, 0, 0};
+			gbl_panel_1.columnWidths = new int[]{0, 68, 47, 141, 93, 69, 0, 0};
 			gbl_panel_1.rowHeights = new int[]{38, 297, 0};
 			gbl_panel_1.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 			gbl_panel_1.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 			panel_1.setLayout(gbl_panel_1);
 			
 			GridBagLayout gbl_panel_2 = new GridBagLayout();
-			gbl_panel_2.columnWidths = new int[]{1, 146, 157, 160, 109, 118, 0, 0};
+			gbl_panel_2.columnWidths = new int[]{1, 160, 133, 210, 164, 86, 0, 0};
 			gbl_panel_2.rowHeights = new int[]{25, 190, 0};
 			gbl_panel_2.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 			gbl_panel_2.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
@@ -411,7 +423,7 @@ public class GUI extends JFrame{
 			gbc_text2a_instruction.gridheight = 9;
 			gbc_text2a_instruction.fill = GridBagConstraints.BOTH;
 			gbc_text2a_instruction.insets = new Insets(0, 0, 5, 5);
-			gbc_text2a_instruction.gridx = 4;
+			gbc_text2a_instruction.gridx = 5;
 			gbc_text2a_instruction.gridy = 2;
 			iframe2_add.getContentPane().add(text2a_instruction, gbc_text2a_instruction);
 			
@@ -478,7 +490,7 @@ public class GUI extends JFrame{
 			
 			GridBagConstraints gbc_lbl2a_instruction = new GridBagConstraints();
 			gbc_lbl2a_instruction.insets = new Insets(0, 0, 5, 5);
-			gbc_lbl2a_instruction.gridx = 4;
+			gbc_lbl2a_instruction.gridx = 5;
 			gbc_lbl2a_instruction.gridy = 1;
 			iframe2_add.getContentPane().add(lbl2a_instruction, gbc_lbl2a_instruction);
 			
@@ -495,9 +507,9 @@ public class GUI extends JFrame{
 			iframe2_add.getContentPane().add(lbl2a_amount, gbc_lbl2a_amount);
 				
 			GridBagConstraints gbc_lbl2a_unit = new GridBagConstraints();
-			gbc_lbl2a_unit.insets = new Insets(0, 0, 5, 0);
-			gbc_lbl2a_unit.gridx = 5;
-			gbc_lbl2a_unit.gridy = 1;
+			gbc_lbl2a_unit.insets = new Insets(0, 0, 5, 5);
+			gbc_lbl2a_unit.gridx = 4;
+			gbc_lbl2a_unit.gridy = 2;
 			iframe2_add.getContentPane().add(lbl2a_unit, gbc_lbl2a_unit);
 			
 			GridBagConstraints gbc_lbl2_ingredients = new GridBagConstraints();
@@ -614,16 +626,22 @@ public class GUI extends JFrame{
 			
 			GridBagConstraints gbc_btn2a_ok = new GridBagConstraints();
 			gbc_btn2a_ok.gridwidth = 2;
-			gbc_btn2a_ok.insets = new Insets(0, 0, 5, 5);
-			gbc_btn2a_ok.gridx = 5;
+			gbc_btn2a_ok.insets = new Insets(0, 0, 5, 0);
+			gbc_btn2a_ok.gridx = 6;
 			gbc_btn2a_ok.gridy = 2;
 			iframe2_add.getContentPane().add(btn2a_ok, gbc_btn2a_ok);
 
 			GridBagConstraints gbc_btn2a_cancel = new GridBagConstraints();
 			gbc_btn2a_cancel.insets = new Insets(0, 0, 5, 5);
-			gbc_btn2a_cancel.gridx = 5;
-			gbc_btn2a_cancel.gridy = 3;
+			gbc_btn2a_cancel.gridx = 6;
+			gbc_btn2a_cancel.gridy = 4;
 			iframe2_add.getContentPane().add(btn2a_cancel, gbc_btn2a_cancel);
+			
+			GridBagConstraints gbc_btn2a_ingredient = new GridBagConstraints();
+			gbc_btn2a_ingredient.insets = new Insets(0, 0, 5, 5);
+			gbc_btn2a_ingredient.gridx = 6;
+			gbc_btn2a_ingredient.gridy = 3;
+			iframe2_add.getContentPane().add(btn2a_more, gbc_btn2a_ingredient);
 			
 			GridBagConstraints gbc_btn3_filter = new GridBagConstraints();
 			gbc_btn3_filter.gridx = 5;
@@ -738,6 +756,16 @@ public class GUI extends JFrame{
 					txtf2a_name.setText("");
 					text2a_instruction.setText("");
 					spin2a_amount.setValue(0);
+					lbl2a_unit.setText("");
+					for (JComboBox<String> i : iframe2_temp_combx){
+						if (!(i==null))iframe2_add.remove(i);
+					}
+					for (JSpinner j : iframe2_temp_spin){
+						if (!(j==null))iframe2_add.remove(j);
+					}
+					for (JLabel k : iframe2_temp_lbl){
+						if (!(k==null))iframe2_add.remove(k);
+					}
 			}
 		}
 		
@@ -800,6 +828,9 @@ public class GUI extends JFrame{
 					for (String i : Storage.listIngredients()){
 						combx2a_ingredient.addItem(i);
 					}
+					combx2a_ingredient.insertItemAt("Select", 0);
+					combx2a_ingredient.setSelectedIndex(0);
+					btn2a_more.setEnabled(true);
 			}
 		}
 	
@@ -844,11 +875,11 @@ public class GUI extends JFrame{
 					populateFields(2);
 				}
 				
-				if (source == btn1_add){
+				else if (source == btn1_add){
 					iframe1_add.setVisible(true);
 				}
 				
-				if (source == btn2_delete){
+				else if (source == btn2_delete){
 					String rname = list2_recipes.getSelectedValue();
 					
 					if (rname == null){
@@ -862,12 +893,12 @@ public class GUI extends JFrame{
 					clearFields(2);
 				}
 				
-				if (source == btn2_add){
+				else if (source == btn2_add){
 					populateFields(21);
 					iframe2_add.setVisible(true);
 				}
 				
-				if (source == btn3_filter){
+				else if (source == btn3_filter){
 					filteringActive = true;
 					populateList(2);					
 					clearFields(2);
@@ -876,7 +907,7 @@ public class GUI extends JFrame{
 					tabbedPane.setSelectedComponent(panel_2);
 				}
 				
-				if (source == btn3_resetFilter){
+				else if (source == btn3_resetFilter){
 					filteringActive = false;
 					btn3_resetFilter.setEnabled(false);
 					lbl2_filteringActive.setVisible(false);
@@ -884,17 +915,12 @@ public class GUI extends JFrame{
 					clearFields(2);
 				}
 				
-				if (source == btn1a_cancel){
+				else if (source == btn1a_cancel){
 					clearFields(11);
 					iframe1_add.setVisible(false);
 				}
 				
-				if (source == btn2a_cancel){
-					clearFields(21);
-					iframe2_add.setVisible(false);
-				}
-				
-				if (source == btn1a_ok){
+				else if (source == btn1a_ok){
 					
 					String name = txtf1a_name.getText();
 					double amount = (double) spin1a_amount.getModel().getValue();
@@ -923,19 +949,89 @@ public class GUI extends JFrame{
 					iframe1_add.setVisible(false);
 				}
 				
-				if (source == btn2a_ok){
+				else if (source == btn2a_ok){
+					String name = txtf2a_name.getText();
+					String instruction = text2a_instruction.getText();
+					LinkedHashMap<String, Double> ingredients = new LinkedHashMap<String, Double>();
+					if (!(combx2a_ingredient.getSelectedIndex() == 0)) ingredients.put( (String) combx2a_ingredient.getSelectedItem(), (Double) spin2a_amount.getValue());
+					for (int i=1; i<=iframe2_temp_counter-1;i++){
+						if (!(iframe2_temp_combx[i].getSelectedIndex() == 0)) ingredients.put( (String) iframe2_temp_combx[i].getSelectedItem(), (Double) iframe2_temp_spin[i].getValue());
+					}
+					Book.setRecipe(name, instruction, ingredients);
+					
 					clearFields(21);
 					populateList(2);
+					iframe2_temp_counter=0;
 					iframe2_add.setVisible(false);
 				}
 				
-				if (source == rdbtn3_az){
+				else if (source == btn2a_cancel){
+					clearFields(21);
+					iframe2_temp_counter=0;
+					iframe2_add.setVisible(false);
+				}
+				
+				else if (source == btn2a_more){
+					if (iframe2_temp_counter<2) iframe2_temp_counter = 1;
+					
+					iframe2_temp_combx[iframe2_temp_counter] = new JComboBox<String>(Storage.listIngredients());
+					iframe2_temp_combx[iframe2_temp_counter].insertItemAt("Select", 0);
+					iframe2_temp_combx[iframe2_temp_counter].setSelectedIndex(0);
+					iframe2_temp_combx[iframe2_temp_counter].addActionListener(new ButtonHandler());
+					
+					iframe2_temp_GBC1[iframe2_temp_counter] = new GridBagConstraints();
+					iframe2_temp_GBC1[iframe2_temp_counter].fill = GridBagConstraints.HORIZONTAL;
+					iframe2_temp_GBC1[iframe2_temp_counter].insets = new Insets(0, 0, 5, 5);
+					iframe2_temp_GBC1[iframe2_temp_counter].gridx = 2;
+					iframe2_temp_GBC1[iframe2_temp_counter].gridy = 2+iframe2_temp_counter;
+					iframe2_add.getContentPane().add(iframe2_temp_combx[iframe2_temp_counter], iframe2_temp_GBC1[iframe2_temp_counter]);
+					
+					iframe2_temp_spin[iframe2_temp_counter] = new JSpinner();
+					iframe2_temp_spin[iframe2_temp_counter].setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.01));
+					iframe2_temp_spin[iframe2_temp_counter].setEditor(new JSpinner.NumberEditor(iframe2_temp_spin[iframe2_temp_counter], "###.##"));
+					
+					iframe2_temp_GBC2[iframe2_temp_counter] = new GridBagConstraints();
+					iframe2_temp_GBC2[iframe2_temp_counter].fill = GridBagConstraints.HORIZONTAL;
+					iframe2_temp_GBC2[iframe2_temp_counter].insets = new Insets(0, 0, 5, 5);
+					iframe2_temp_GBC2[iframe2_temp_counter].gridx = 3;
+					iframe2_temp_GBC2[iframe2_temp_counter].gridy = 2+iframe2_temp_counter;
+					iframe2_add.getContentPane().add(iframe2_temp_spin[iframe2_temp_counter], iframe2_temp_GBC2[iframe2_temp_counter]);
+					
+					iframe2_temp_lbl[iframe2_temp_counter] = new JLabel();
+					iframe2_temp_GBC3[iframe2_temp_counter] = new GridBagConstraints();
+					iframe2_temp_GBC3[iframe2_temp_counter].insets = new Insets(0, 0, 5, 5);
+					iframe2_temp_GBC3[iframe2_temp_counter].gridx = 4;
+					iframe2_temp_GBC3[iframe2_temp_counter].gridy = 2+iframe2_temp_counter;
+					iframe2_add.getContentPane().add(iframe2_temp_lbl[iframe2_temp_counter], iframe2_temp_GBC3[iframe2_temp_counter]);
+					
+					if(iframe2_temp_counter<10) iframe2_temp_counter++;
+					if (iframe2_temp_counter==10) btn2a_more.setEnabled(false);
+					iframe2_add.validate();
+				}
+				
+				else if (source == rdbtn3_az){
 					rdbtn3_az.setSelected(true);
 					rdbtn3_expiration.setSelected(false);
 				}
-				if (source == rdbtn3_expiration){
+				else if (source == rdbtn3_expiration){
 					rdbtn3_az.setSelected(false);
 					rdbtn3_expiration.setSelected(true);
+				}
+				
+				else if ((source == combx2a_ingredient) && ((combx2a_ingredient.getSelectedIndex() > 0))){
+					notice("huomio", "jee");
+					lbl2a_unit.setText(Storage.getUnit(combx2a_ingredient.getSelectedItem().toString()).toString());
+				}
+				else{
+					JComboBox<String> temp = (JComboBox<String>) source;
+					int j=0;
+					for (JComboBox<String> i : iframe2_temp_combx){
+						if (temp.equals(i)){
+							iframe2_temp_lbl[j].setText(Storage.getUnit(i.getSelectedItem().toString()).toString());
+							break;
+						}
+						j++;
+					}
 				}
 			}
 		}
