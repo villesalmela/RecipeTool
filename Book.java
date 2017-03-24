@@ -31,7 +31,7 @@ public class Book {
 	}
 	
 	
-	public static void deleteAllIngredient(String iname){							//delete one ingredient in all recipes
+	public static void deleteAllIngredients(String iname){							//delete one ingredient in all recipes
 		for (String rname : recipes){
 			ingredients.get(rname).remove(iname);
 		}

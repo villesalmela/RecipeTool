@@ -14,11 +14,11 @@ public class Storage {
 	
 	
 //CREATE & DELETE
-	public static void setIngredient(String name, double amount, Unit unit, TreeSet<String> allergen, Date expiration){ //build new ingredient from scratch
+	public static void setIngredient(String name, double amount, Unit unit, String[] allergen, Date expiration){ //build new ingredient from scratch
 		ingredients.add(name);
 		amounts.put(name, amount);
 		units.put(name, unit);
-		allergens.put(name, allergen);
+		allergens.put(name, new TreeSet<String>(Arrays.asList(allergen)));
 		expirations.put(name, expiration);
 	}
 	

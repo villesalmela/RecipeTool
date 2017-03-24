@@ -100,7 +100,7 @@ public class GUI extends JFrame{
 			private JLabel lbl2a_instruction = new JLabel("Instruction");
 			private JLabel lbl2a_ingredient = new JLabel("Ingredient");
 			private JLabel lbl2a_amount = new JLabel("Amount");
-			private JLabel lbl2a_unit = new JLabel("placeholder");
+			private JLabel lbl2a_unit = new JLabel("");
 			
 			private JLabel lbl3_mustHave = new JLabel("Must have ingredients");
 			private JLabel lbl3_noShopping = new JLabel("No shopping");
@@ -153,6 +153,7 @@ public class GUI extends JFrame{
 			private boolean filteringActive = false;
 			
 			private int iframe2_temp_counter=0;
+			@SuppressWarnings("unchecked")
 			private JComboBox<String>[] iframe2_temp_combx = new JComboBox[10];
 			private GridBagConstraints[] iframe2_temp_GBC1 = new GridBagConstraints[10];
 			private JSpinner[] iframe2_temp_spin = new JSpinner[10];
@@ -166,7 +167,7 @@ public class GUI extends JFrame{
 			
 			setResizable(false);
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
-			setBounds(0,0,1000,450);
+			setBounds(0,0,1000,1000);
 			setLocationRelativeTo(null);
 			getContentPane().setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 			
@@ -867,7 +868,7 @@ public class GUI extends JFrame{
 					if (confirm("Warning","If you delete ingredient in here, it will also be deleted from all recipes.") == 2) return;
 
 					Storage.deleteIngredient(iname);
-					Book.deleteAllIngredient(iname);
+					Book.deleteAllIngredients(iname);
 					
 					populateList(1);
 					populateList(3);
@@ -941,7 +942,7 @@ public class GUI extends JFrame{
 						String unfinished = (String) temp2.getCellEditorValue();
 						if (!(unfinished == null)) allergen.add(unfinished);
 					}
-					Storage.setIngredient(name, amount, unit, allergen, expiration);
+					Storage.setIngredient(name, amount, unit, allergen.toArray(new String[0]), expiration);
 					populateList(1);
 					populateList(3);
 					clearFields(11);
@@ -1019,10 +1020,10 @@ public class GUI extends JFrame{
 				}
 				
 				else if ((source == combx2a_ingredient) && ((combx2a_ingredient.getSelectedIndex() > 0))){
-					notice("huomio", "jee");
 					lbl2a_unit.setText(Storage.getUnit(combx2a_ingredient.getSelectedItem().toString()).toString());
 				}
 				else{
+					@SuppressWarnings("unchecked")
 					JComboBox<String> temp = (JComboBox<String>) source;
 					int j=0;
 					for (JComboBox<String> i : iframe2_temp_combx){

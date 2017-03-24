@@ -8,9 +8,12 @@ Improve:
 	Better layout & visuals for GUI
 
 New features:
-	Database integration
+	Database integration (recipe part remaining)
 	Modify (ingredients & recipes) in GUI
-	Add recipe: show unit, iterate creating comboboxes, implement adding to book.
+	Do you want to overwrite?
+	Save/Load in GUI
+	Database Settings/Load TestValues in GUI
+	
 */
 package recipeTool;
 
@@ -28,7 +31,7 @@ public class Test {
 		TreeSet<String> a = new TreeSet<String>();
 		a.add("laktoosi");
 		
-		Storage.setIngredient(iname, amount, unit, a, e);
+		Storage.setIngredient(iname, amount, unit, a.toArray(new String[0]), e);
 		
 //SET INGREDIENT 2
 		iname = "kaakao";
@@ -39,7 +42,7 @@ public class Test {
 		a.add("suklaa");
 
 		
-		Storage.setIngredient(iname, amount, unit, a, e);
+		Storage.setIngredient(iname, amount, unit, a.toArray(new String[0]), e);
 		
 //SET INGREDIENT 5
 		iname = "aurajuusto";
@@ -50,7 +53,7 @@ public class Test {
 		a.add("jokivesi");
 
 		
-		Storage.setIngredient(iname, amount, unit, a, e);
+		Storage.setIngredient(iname, amount, unit, a.toArray(new String[0]), e);
 		
 //SET INGREDIENT 6
 		iname = "mozzarella";
@@ -61,7 +64,7 @@ public class Test {
 		a.add("käsikarva");
 
 		
-		Storage.setIngredient(iname, amount, unit, a, e);
+		Storage.setIngredient(iname, amount, unit, a.toArray(new String[0]), e);
 				
 //SET INGREDIENT 7
 		iname = "sulatejuusto";
@@ -72,7 +75,7 @@ public class Test {
 		a.add("juustokumina");
 
 				
-		Storage.setIngredient(iname, amount, unit, a, e);
+		Storage.setIngredient(iname, amount, unit, a.toArray(new String[0]), e);
 		
 //SET RECIPE 1
 		String rname = "maitokaakao";
@@ -85,25 +88,25 @@ public class Test {
 		
 //SET INGREDIENT 3
 		iname = "jauho";
-		amount = 30.0;
+		amount = 300.0;
 		unit = Unit.KG;
 		e = DateFormat.getDateInstance().parse("11.11.2333");
 		a = new TreeSet<String>();
 		a.add("gluteeni");
 
 		
-		Storage.setIngredient(iname, amount, unit, a, e);
+		Storage.setIngredient(iname, amount, unit, a.toArray(new String[0]), e);
 		
 //SET INGREDIENT 4
 		iname = "kananmuna";
-		amount = 40.0;
+		amount = 400.0;
 		unit = Unit.PCS;
 		e = DateFormat.getDateInstance().parse("11.11.2011");
 		a = new TreeSet<String>();
-		a.add("keltuainen");
+		a.add("keltuainenB");
 
 		
-		Storage.setIngredient(iname, amount, unit, a, e);
+		Storage.setIngredient(iname, amount, unit, a.toArray(new String[0]), e);
 		
 //SET RECIPE 2
 		rname = "taikina";
