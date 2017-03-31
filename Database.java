@@ -5,12 +5,27 @@ import java.sql.*;
 public class Database {
 	
    //CONNECTION SETUP
-	private static String HOST_URL = "jdbc:mariadb://localhost:3306/";
-	private static String DB_URL = "jdbc:mariadb://localhost:3306/recipe_tool";
-	private static String USER = "root";
-	private static String PASS = "6RuN@2r8%+4*)ypQ2v$97(6em2-!/$,T";
+	private static String HOST_URL;
+	private static String DB_URL;
+	private static String USER;
+	private static String PASS;
 	private static Connection connection = null;
-   
+	
+	public static void setup(String ip, String port, String user, String pass, String db){
+		HOST_URL = "jdbc:mariadb://"+ip+":"+port;
+		DB_URL = "jdbc:mariadb://"+ip+":"+port+"/"+db;
+		USER = user;
+		PASS = pass;
+	}
+	
+	public static boolean isConnected(){
+		try {
+			return connection.isValid(1);
+		} catch (Exception exception) {
+			return false;
+		}
+	}
+	
    //OPEN & CLOSE CONNECTION
    public static void init() throws SQLException {
 	   //Open a connection
@@ -19,12 +34,17 @@ public class Database {
    
    public static void open() throws SQLException {
 	   //Open a connection
+	   close();
 	   connection = DriverManager.getConnection(DB_URL, USER, PASS);
    }
    
-   public static void close() throws SQLException {
+   public static void close(){
 	   //Close a connection
-	   if(connection!=null) connection.close();
+	   try {
+		if(connection!=null) connection.close();
+	} catch (Exception e) {
+		//Nothing much can be done, swallow the exception 
+	}
    }
    
    //PREPARE
