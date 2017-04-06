@@ -3,7 +3,13 @@ package recipeTool;
 import java.util.Comparator;
 import java.util.Date;
 
-public class Expiry implements Comparator<String> {
+/**
+ * This comparator is used to sort recipes according to their expiration dates.<br>
+ * This class uses {@link recipeTool.Book#getExpiration(String)} to fetch the dates.
+ * @author Ville Salmela
+ *
+ */
+class Expiry implements Comparator<String> { //package-private
 
 	@Override
 	public int compare(String o1, String o2) {
