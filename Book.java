@@ -14,13 +14,14 @@ import java.util.*;
 class Book { //package-private
 	
 //PROPERTIES
-	final private static DuoTable<String, String, LinkedHashMap<String, Double>> duoTable = new DuoTable<>();
-	/*
-	 * FIRST = Instruction
-	 * SECOND = Ingredients
-	 */
+	final private static Map<String, Object[]> map = new HashMap<>();
 	
 	private Book(){}
+	
+	@SuppressWarnings("unchecked")
+	private static LinkedHashMap<String, Double> getIngredients(String key){
+		return ((LinkedHashMap<String,Double>)map.get(key)[1]);
+	}
 	
 //CREATE & DELETE
 	
@@ -39,7 +40,7 @@ class Book { //package-private
 		for (String iname : ingredient.keySet()){
 			if (iname == null || iname.equals("") || ingredient.get(iname) == null || ingredient.get(iname) < 0) throw new IllegalArgumentException();
 		}
-		duoTable.set(name, instruction, ingredient);
+		map.put(name, new Object[]{instruction, ingredient});
 	}
 	
 	
@@ -53,26 +54,26 @@ class Book { //package-private
 	public static void deleteRecipe(String name){									//delete entire recipe
 		if (name == null || name.equals("")) throw new IllegalArgumentException();
 		if (hasRecipe(name) == false) throw new NoSuchElementException();
-		duoTable.deleteKey(name);
+		map.remove(name);
 	}
 	
 	public static void deleteIngredient(String rname, String iname){				//delete one ingredient in one recipe
-		duoTable.getSecond(rname).remove(iname);
+		getIngredients(rname).remove(iname);
 	}
 	
 	public static void deleteAllIngredients(String iname){							//delete one ingredient in all recipes
-		for (String rname : duoTable.getKeys()){
-			duoTable.getSecond(rname).remove(iname);
+		for (String rname : map.keySet()){
+			getIngredients(rname).remove(iname);
 		}
 	}
 	
 //GETTERS (INTERNAL)
 	public static String getInsturction(String name){								//get instruction for one recipe
-		return duoTable.getFirst(name);
+		return (String)map.get(name)[0];
 	}
 	
 	public static Double getAmount(String rname, String iname){						//get amount of one ingredient in one recipe
-		return duoTable.getSecond(rname).get(iname);
+		return getIngredients(rname).get(iname);
 	}
 	
 //GETTERS (EXTERNAL)
@@ -87,7 +88,7 @@ class Book { //package-private
 		if (rname == null || rname.equals("")) throw new IllegalArgumentException();
 		if (hasRecipe(rname) == false) throw new NoSuchElementException();
 		TreeSet<String> temp = new TreeSet<>();								//	in A-Z order
-		for (String iname : duoTable.getSecond(rname).keySet()){
+		for (String iname : getIngredients(rname).keySet()){
 			if (Storage.getAllergens(iname) != null) temp.addAll(Storage.getAllergens(iname));
 		}
 		return temp;
@@ -105,7 +106,7 @@ class Book { //package-private
 		if (hasRecipe(rname) == false) throw new NoSuchElementException();
 		String temp = null;																//	and the name of this ingredient
 		Date expiration = null;														
-		for (String iname : duoTable.getSecond(rname).keySet()){
+		for (String iname : getIngredients(rname).keySet()){
 			if (Storage.getExpiration(iname) == null) continue;
 			else if (expiration == null) {
 				expiration = Storage.getExpiration(iname);
@@ -133,7 +134,7 @@ class Book { //package-private
 		if (rname == null || rname.equals("")) throw new IllegalArgumentException();
 		if (hasRecipe(rname) == false) throw new NoSuchElementException();
 		boolean enough = true;														//	false if NOT enough ingredients in storage
-		for (String iname : duoTable.getSecond(rname).keySet()){
+		for (String iname : getIngredients(rname).keySet()){
 			if (getAmount(rname, iname) > Storage.getAmount(iname)) enough = false;
 		}
 		return enough;
@@ -149,7 +150,7 @@ class Book { //package-private
 	 */
 	public static boolean hasRecipe(String name){
 		if (name == null || name.equals("")) throw new IllegalArgumentException();
-		return duoTable.getKeys().contains(name);
+		return map.keySet().contains(name);
 	}
 	
 	
@@ -165,7 +166,7 @@ class Book { //package-private
 	public static boolean hasIngredient(String rname, String iname){				//true, if recipe has specified ingredient
 		if (rname == null || rname.equals("") || iname == null || iname.equals("")) throw new IllegalArgumentException();
 		if (hasRecipe(rname) == false) throw new NoSuchElementException();
-		return duoTable.getSecond(rname).keySet().contains(iname);
+		return getIngredients(rname).keySet().contains(iname);
 	}
 
 //LIST
@@ -174,20 +175,20 @@ class Book { //package-private
 	 * @return A list containing all recipes, sorted alphabetically.
 	 */
 	public static TreeSet<String> listRecipes(){										//get list of all recipes in A-Z order
-		return duoTable.getKeys();
+		return new TreeSet<>(map.keySet());
 	}
 	
 	/**
 	 * This method will list all ingredient names in specified recipe.
-	 * @param name The name of the recipe.
+	 * @param rname The name of the recipe.
 	 * @return A list of all the ingredient names in one recipe, in the order of input.
 	 * @throws NoSuchElementException if the recipe does not exist in the book.
 	 * @throws IllegalArgumentException if {@code name} is {@code null}/empty.
 	 */
-	public static LinkedHashSet<String> listIngredients(String name) {				//get list of ingredients in one recipe
-		if (name == null || name.equals("")) throw new IllegalArgumentException();
-		if (hasRecipe(name) == false) throw new NoSuchElementException();
-		return new LinkedHashSet<>(duoTable.getSecond(name).keySet());
+	public static LinkedHashSet<String> listIngredients(String rname) {				//get list of ingredients in one recipe
+		if (rname == null || rname.equals("")) throw new IllegalArgumentException();
+		if (hasRecipe(rname) == false) throw new NoSuchElementException();
+		return new LinkedHashSet<>(getIngredients(rname).keySet());
 	}
 	
 	/**
@@ -223,7 +224,7 @@ class Book { //package-private
 		temp.addAll(listRecipes());
 		for (String rname : listRecipes()){
 			if (mustHave.isEmpty() == false){
-				if (duoTable.getSecond(rname).keySet().containsAll(mustHave) == false) temp.remove(rname);
+				if (getIngredients(rname).keySet().containsAll(mustHave) == false) temp.remove(rname);
 			}
 			if (avoidAllergens.isEmpty() == false){
 				for (String allergen : avoidAllergens){
@@ -231,7 +232,7 @@ class Book { //package-private
 				}
 			}
 			if (enough == true){
-				for (String iname : duoTable.getSecond(rname).keySet()){
+				for (String iname : getIngredients(rname).keySet()){
 					if(Storage.getAmount(iname) < getAmount(rname, iname)) temp.remove(rname);
 				}
 			}

@@ -10,13 +10,8 @@ import java.util.*;
 class Storage { //package-private
 	
 //PROPERTIES
-	final private static QuadTable<String, Unit, TreeSet<String>, Date, Double> quadTable = new QuadTable<>();
-	/*
-	 * FIRST = Unit
-	 * SECOND = Allergens
-	 * THIRD = Expiration
-	 * FOURTH = Amount
-	 */
+	final private static Map<String,Object[]> map = new HashMap<>();
+
 	
 	private Storage(){}
 	
@@ -35,7 +30,7 @@ class Storage { //package-private
 	 */
 	public static void setIngredient(String name, double amount, Unit unit, TreeSet<String> allergen, Date expiration){ //build new ingredient from scratch
 		if (name == null || name.equals("") || amount < 0 || unit == null) throw new IllegalArgumentException();
-		quadTable.set(name, unit, allergen, expiration, amount);
+		map.put(name, new Object[]{unit,allergen,expiration,amount});
 	}
 	
 	/**
@@ -48,7 +43,7 @@ class Storage { //package-private
 	public static void deleteIngredient(String name){						//delete all keys and values for one ingredient
 		if (name == null || name.equals("")) throw new IllegalArgumentException();
 		if (hasIngredient(name) == false) throw new NoSuchElementException();
-		quadTable.deleteKey(name);
+		map.remove(name);
 	}
 	
 //GETTERS
@@ -62,7 +57,7 @@ class Storage { //package-private
 	public static Unit getUnit(String name){								//get the unit of specified ingredient
 		if (name == null || name.equals("")) throw new IllegalArgumentException();
 		if (hasIngredient(name) == false) throw new NoSuchElementException();
-		return quadTable.getFirst(name);
+		return (Unit)map.get(name)[0];
 	}
 	
 	/**
@@ -75,7 +70,7 @@ class Storage { //package-private
 	public static TreeSet<String> getAllergens(String name){					//get list of all allergens for specified ingredient, in A-Z order
 		if (name == null || name.equals("")) throw new IllegalArgumentException();
 		if (hasIngredient(name) == false) throw new NoSuchElementException();
-		return quadTable.getSecond(name);
+		return (TreeSet<String>)map.get(name)[1];
 	}
 	
 	/**
@@ -88,7 +83,7 @@ class Storage { //package-private
 	public static Date getExpiration(String name){							//get the expiration date of specified ingredient
 		if (name == null || name.equals("")) throw new IllegalArgumentException();
 		if (hasIngredient(name) == false) throw new NoSuchElementException();
-		return quadTable.getThird(name) == null ? null : quadTable.getThird(name);
+		return (Date)map.get(name)[2];
 	}
 	
 	/**
@@ -101,7 +96,7 @@ class Storage { //package-private
 	public static double getAmount(String name){							//get amount (in storage) of specified ingredient
 		if (name == null || name.equals("")) throw new IllegalArgumentException();
 		if (hasIngredient(name) == false) throw new NoSuchElementException();
-		return quadTable.getFourth(name);
+		return (double)map.get(name)[3];
 	}
 	
 	
@@ -114,7 +109,7 @@ class Storage { //package-private
 	 */
 	public static boolean hasIngredient(String name){						//true, if specified ingredient is in storage
 		if (name == null || name.equals("")) throw new IllegalArgumentException();
-		return quadTable.getKeys().contains(name);
+		return map.keySet().contains(name);
 	}
 	
 //LISTERS
@@ -123,7 +118,7 @@ class Storage { //package-private
 	 * @return A list containing all ingredients in storage, sorted alphabetically.
 	 */
 	public static TreeSet<String> listIngredients(){							//get list of all ingredients in storage, in A-Z order
-		return quadTable.getKeys();
+		return new TreeSet<>(map.keySet());
 	}
 	
 	
@@ -134,7 +129,7 @@ class Storage { //package-private
 	public static TreeSet<String> listAllergens(){
 		TreeSet<String> temp = new TreeSet<>();
 		for (String i: listIngredients()){
-			if(quadTable.getSecond(i) != null) temp.addAll(quadTable.getSecond(i));
+			if(getAllergens(i) != null) temp.addAll(getAllergens(i));
 		}
 		return temp;
 	}
