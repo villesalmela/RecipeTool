@@ -40,12 +40,12 @@ import java.awt.Dimension;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.TreeSet;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SpinnerDateModel;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.LineBorder;
@@ -53,6 +53,12 @@ import net.miginfocom.swing.MigLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+/**
+ * This class holds the Graphical User Interface.
+ * 
+ * @author Ville Salmela
+ *
+ */
 class GUI extends JFrame { // package-private
 
 	private static final long serialVersionUID = -3121708348469315637L;
@@ -129,8 +135,10 @@ class GUI extends JFrame { // package-private
 	// BUTTONS
 	private final JButton btn1_add = new JButton("Add ingredient");
 	private final JButton btn1_delete = new JButton("Delete ingredient");
+	private final JButton btn1_modify = new JButton("Modify ingredient");
 	private final JButton btn2_add = new JButton("Add recipe");
 	private final JButton btn2_delete = new JButton("Delete recipe");
+	private final JButton btn2_modify = new JButton("Modify recipe");
 	private final JButton btn1a_ok = new JButton("Add to Storage");
 	private final JButton btn1a_cancel = new JButton("Cancel");
 	private final JButton btn2a_ok = new JButton("Add to Book");
@@ -147,6 +155,7 @@ class GUI extends JFrame { // package-private
 
 	// CHECKBOXES
 	private final JCheckBox chckbx3_noShopping = new JCheckBox("No Shopping");
+	private final JCheckBox chckbx1a_noExpiry = new JCheckBox("Does not expire");
 
 	// RADIO BUTTONS
 	private final JRadioButton rdbtn3_az = new JRadioButton("A-Z");
@@ -196,12 +205,12 @@ class GUI extends JFrame { // package-private
 		super("recipeTool");
 		setContentPane(new JDesktopPane());
 
-		this.containerArrayAll = new java.awt.Container[] { this.panel_1, this.panel_2, this.panel_3, this.panel_4,
-				this.iframe1_add.getContentPane(), this.iframe2_add.getContentPane(),
-				this.iframe0_settings.getContentPane() };
-		this.containerArrayIframes = new java.awt.Container[] { this.iframe0_settings.getContentPane(),
-				this.iframe1_add.getContentPane(), this.iframe2_add.getContentPane() };
-		this.containerArrayPanels = new java.awt.Container[] { this.panel_1, this.panel_2, this.panel_3, this.panel_4 };
+		containerArrayAll = new java.awt.Container[] { panel_1, panel_2, panel_3, panel_4,
+				iframe1_add.getContentPane(), iframe2_add.getContentPane(),
+				iframe0_settings.getContentPane() };
+		containerArrayIframes = new java.awt.Container[] { iframe0_settings.getContentPane(),
+				iframe1_add.getContentPane(), iframe2_add.getContentPane() };
+		containerArrayPanels = new java.awt.Container[] { panel_1, panel_2, panel_3, panel_4 };
 
 		migLayout();
 		config();
@@ -212,118 +221,124 @@ class GUI extends JFrame { // package-private
 
 	// MIGLAYOUT
 	// ***********************************************************************************************************************
+	/**
+	 * This method will setup the Graphical User Interface layout.
+	 */
 	private void migLayout() {
-
+		
 		// ROOT
 
 		Container root = getContentPane();
 		root.setLayout(new MigLayout("fill,insets 0"));
-		root.add(this.tabbedPane, "north, h 80%");
-		root.add(this.panel_4, "south, h 20%");
-		root.add(this.iframe1_add, "pos 20% 20%");
-		root.add(this.iframe2_add, "pos 20% 20%");
-		root.add(this.iframe0_settings, "pos 20% 20%");
+		root.add(tabbedPane, "north, h 80%");
+		root.add(panel_4, "south, h 20%");
+		root.add(iframe1_add, "pos 20% 20%");
+		root.add(iframe2_add, "pos 20% 20%");
+		root.add(iframe0_settings, "pos 20% 20%");
 
 		Container c;
 
-		c = this.panel_4;
+		c = panel_4;
 		c.setLayout(new MigLayout());
-		c.add(this.btn0_settings_open);
-		c.add(this.btn0_settings_load);
-		c.add(this.btn0_settings_save);
-		c.add(this.lbl_connection);
+		c.add(btn0_settings_open);
+		c.add(btn0_settings_load);
+		c.add(btn0_settings_save);
+		c.add(lbl_connection);
 
-		c = this.iframe0_settings.getContentPane();
+		c = iframe0_settings.getContentPane();
 		c.setLayout(new MigLayout("", "[4cm,fill|2cm,fill|4cm,fill|4cm,fill]", "top"));
-		c.add(this.lbl0_ip);
-		c.add(this.lbl0_port);
-		c.add(this.lbl0_user);
-		c.add(this.lbl0_pass, "wrap");
-		c.add(this.txtf0_ip);
-		c.add(this.spin0_port);
-		c.add(this.txtf0_user);
-		c.add(this.txtf0_pass, "wrap");
-		c.add(this.btn0_settings_connect, "span 4, split 3");
-		c.add(this.btn0_settings_test);
-		c.add(this.btn0_settings_close);
+		c.add(lbl0_ip);
+		c.add(lbl0_port);
+		c.add(lbl0_user);
+		c.add(lbl0_pass, "wrap");
+		c.add(txtf0_ip);
+		c.add(spin0_port);
+		c.add(txtf0_user);
+		c.add(txtf0_pass, "wrap");
+		c.add(btn0_settings_connect, "span 4, split 3");
+		c.add(btn0_settings_test);
+		c.add(btn0_settings_close);
 
-		c = this.panel_1;
+		c = panel_1;
 		c.setLayout(new MigLayout("flowy",
 				"[align right,10% | align left, 20%,fill | align left, 20%,fill | align left]", "10%"));
-		c.add(this.lbl1_amount);
-		c.add(this.lbl1_unit);
-		c.add(this.lbl1_allergens);
-		c.add(this.lbl1_expiration, "wrap");
-		c.add(this.text1_amount);
-		c.add(this.text1_unit);
-		c.add(this.text1_allergens);
-		c.add(this.text1_expiration, "wrap");
-		c.add(this.list1_ingredients, "grow, spany 4,wrap");
-		c.add(this.btn1_add, "split 2");
-		c.add(this.btn1_delete);
+		c.add(lbl1_amount);
+		c.add(lbl1_unit);
+		c.add(lbl1_allergens);
+		c.add(lbl1_expiration, "wrap");
+		c.add(text1_amount);
+		c.add(text1_unit);
+		c.add(text1_allergens);
+		c.add(text1_expiration, "wrap");
+		c.add(list1_ingredients, "grow, spany 4,wrap");
+		c.add(btn1_add, "split 3");
+		c.add(btn1_delete);
+		c.add(btn1_modify);
 
-		c = this.iframe1_add.getContentPane();
+		c = iframe1_add.getContentPane();
 		c.setLayout(new MigLayout("", "[5cm,fill|3cm,fill|1cm,fill|5cm,fill|3cm,fill]", "top"));
-		c.add(this.lbl1a_name);
-		c.add(this.lbl1a_amount);
-		c.add(this.lbl1a_unit);
-		c.add(this.lbl1a_allergens);
-		c.add(this.lbl1a_expiration, "wrap");
-		c.add(this.txtf1a_name);
-		c.add(this.spin1a_amount);
-		c.add(this.combx1a_unit);
-		c.add(this.table1a_allergens);
-		c.add(this.spin1a_expiration, "wrap");
-		c.add(this.btn1a_ok, "span 2, split 2");
-		c.add(this.btn1a_cancel);
-
-		c = this.iframe2_add.getContentPane();
+		c.add(lbl1a_name);
+		c.add(lbl1a_amount);
+		c.add(lbl1a_unit);
+		c.add(lbl1a_allergens);
+		c.add(lbl1a_expiration, "wrap");
+		c.add(txtf1a_name);
+		c.add(spin1a_amount);
+		c.add(combx1a_unit);
+		c.add(table1a_allergens);
+		c.add(spin1a_expiration);
+		c.add(chckbx1a_noExpiry, "wrap");
+		c.add(btn1a_ok, "span 2, split 2");
+		c.add(btn1a_cancel);
+		
+		c = iframe2_add.getContentPane();
 		c.setLayout(new MigLayout("", "[5cm,grow 0|7cm,grow 0|5cm|2cm|1cm]", "top"));
-		c.add(this.lbl2a_name);
-		c.add(this.lbl2a_instruction);
-		c.add(this.lbl2a_ingredient);
-		c.add(this.lbl2a_amount);
-		c.add(this.lbl2a_unit_header, "wrap");
-		c.add(this.txtf2a_name, "growx");
-		c.add(this.text2a_instruction, "growx");
-		c.add(this.combx2a_ingredient, "growx");
-		c.add(this.spin2a_amount, "growx");
-		c.add(this.lbl2a_unit, "wrap");
-		c.add(this.btn2a_more, "span 2,split 2,grow 0,left");
-		c.add(this.btn2a_less, "wrap,grow 0");
-		c.add(this.btn2a_ok, "span 2,split 2,grow 0,left");
-		c.add(this.btn2a_cancel, "grow 0");
+		c.add(lbl2a_name);
+		c.add(lbl2a_instruction);
+		c.add(lbl2a_ingredient);
+		c.add(lbl2a_amount);
+		c.add(lbl2a_unit_header, "wrap");
+		c.add(txtf2a_name, "growx");
+		c.add(text2a_instruction, "growx");
+		c.add(combx2a_ingredient, "growx");
+		c.add(spin2a_amount, "growx");
+		c.add(lbl2a_unit, "wrap");
+		c.add(btn2a_more, "span 2,split 2,grow 0,left");
+		c.add(btn2a_less, "wrap,grow 0");
+		c.add(btn2a_ok, "span 2,split 2,grow 0,left");
+		c.add(btn2a_cancel, "grow 0");
 
-		c = this.panel_2;
+		c = panel_2;
 		c.setLayout(new MigLayout("flowy,fillx, align left,insets panel",
 				"[align right,10% | align left,20%,fill | align left,20%,fill | align left | growprio 1000]", "10%"));
-		c.add(this.panel_3, "dock east,w 30%,wmax 30%,grow");
-		c.add(this.lbl2_ingredients);
-		c.add(this.lbl2_insturctions);
-		c.add(this.lbl2_enough);
-		c.add(this.lbl2_allergens);
-		c.add(this.lbl2_expiration, "wrap");
-		c.add(this.text2_ingredients);
-		c.add(this.text2_instruction);
-		c.add(this.lbl2_enoughValue);
-		c.add(this.text2_allergens);
-		c.add(this.text2_expiration, "wrap");
-		c.add(this.list2_recipes, "grow,spany 5,wrap");
-		c.add(this.btn2_add, "split 2");
-		c.add(this.btn2_delete, "wrap");
+		c.add(panel_3, "dock east,w 30%,wmax 30%,grow");
+		c.add(lbl2_ingredients);
+		c.add(lbl2_insturctions);
+		c.add(lbl2_enough);
+		c.add(lbl2_allergens);
+		c.add(lbl2_expiration, "wrap");
+		c.add(text2_ingredients);
+		c.add(text2_instruction);
+		c.add(lbl2_enoughValue);
+		c.add(text2_allergens);
+		c.add(text2_expiration, "wrap");
+		c.add(list2_recipes, "grow,spany 5,wrap");
+		c.add(btn2_add, "split 3");
+		c.add(btn2_delete);
+		c.add(btn2_modify, "wrap");
 
-		c = this.panel_3;
+		c = panel_3;
 		c.setLayout(new MigLayout("flowy,insets panel", "[50%,fill]", "[25%,fill|25%,fill|||]"));
 		c.setBackground(Color.WHITE);
-		c.add(this.list3_mustHave, "grow,spanx 2");
-		c.add(this.list3_avoidAllergens, "grow,spanx 2");
-		c.add(this.lbl3_noShopping);
-		c.add(this.lbl3_sortBy);
-		c.add(this.btn3_filter, "span 2");
-		c.add(this.lbl2_filteringActive, "span 2,grow 0,center,wrap");
-		c.add(this.chckbx3_noShopping);
-		c.add(this.rdbtn3_az, "spanx 2, split 2");
-		c.add(this.rdbtn3_ex);
+		c.add(list3_mustHave, "grow,spanx 2");
+		c.add(list3_avoidAllergens, "grow,spanx 2");
+		c.add(lbl3_noShopping);
+		c.add(lbl3_sortBy);
+		c.add(btn3_filter, "span 2");
+		c.add(lbl2_filteringActive, "span 2,grow 0,center,wrap");
+		c.add(chckbx3_noShopping);
+		c.add(rdbtn3_az, "spanx 2, split 2");
+		c.add(rdbtn3_ex);
 
 	}// end method migLayout
 
@@ -332,62 +347,62 @@ class GUI extends JFrame { // package-private
 	private void config() {
 
 		// ROOT
-		addWindowListener(this.windowhandler);
+		addWindowListener(windowhandler);
 		setResizable(false);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setBounds(0, 0, 1200, 800);
 		setLocationRelativeTo(null);
 
 		// TABS
-		this.tabbedPane.addTab("Ingredients", null, this.panel_1, null);
-		this.tabbedPane.addTab("Recipes", null, this.panel_2, null);
+		tabbedPane.addTab("Ingredients", null, panel_1, null);
+		tabbedPane.addTab("Recipes", null, panel_2, null);
 
 		// RADIO BUTTONS
-		this.rdbtn3_az.setSelected(true);
-		this.rdbtn3_ex.setSelected(false);
+		rdbtn3_az.setSelected(true);
+		rdbtn3_ex.setSelected(false);
 
 		// LABELS
 		final Font font14 = new Font("Tahoma", Font.BOLD, 14);
 
-		for (Component c : this.tabbedPane.getComponents()) {
+		for (Component c : tabbedPane.getComponents()) {
 			for (Component c2 : ((JPanel) c).getComponents()) {
 				if (c2 instanceof JLabel)
 					((JLabel) c2).setFont(font14);
 			}
 		}
 
-		this.lbl2_filteringActive.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lbl2_filteringActive.setFont(new Font("Tahoma", Font.BOLD, 18));
 
 		// LISTS
-		this.list1_ingredients.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.list2_recipes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.list3_avoidAllergens.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		this.list3_mustHave.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		list1_ingredients.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list2_recipes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list3_avoidAllergens.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		list3_mustHave.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-		this.list1_ingredients.setBorder(new TitledBorder(null, "Ingredients", TitledBorder.LEADING, TitledBorder.TOP,
+		list1_ingredients.setBorder(new TitledBorder(null, "Ingredients", TitledBorder.LEADING, TitledBorder.TOP,
 				new Font("Tahoma", Font.BOLD, 18), null));
-		this.list2_recipes.setBorder(new TitledBorder(null, "Recipes", TitledBorder.LEADING, TitledBorder.TOP,
+		list2_recipes.setBorder(new TitledBorder(null, "Recipes", TitledBorder.LEADING, TitledBorder.TOP,
 				new Font("Tahoma", Font.BOLD, 18), null));
-		this.list3_mustHave.setBorder(new TitledBorder(null, "Must have ingredients", TitledBorder.LEADING,
+		list3_mustHave.setBorder(new TitledBorder(null, "Must have ingredients", TitledBorder.LEADING,
 				TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 18), null));
-		this.list3_avoidAllergens.setBorder(new TitledBorder(null, "Avoid allergens", TitledBorder.LEADING,
+		list3_avoidAllergens.setBorder(new TitledBorder(null, "Avoid allergens", TitledBorder.LEADING,
 				TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 18), null));
 
-		this.list1_ingredients.addListSelectionListener(this.listhandler);
-		this.list2_recipes.addListSelectionListener(this.listhandler);
+		list1_ingredients.addListSelectionListener(listhandler);
+		list2_recipes.addListSelectionListener(listhandler);
 
 		// BUTTONS
-		for (java.awt.Container c : this.containerArrayAll) {
+		for (java.awt.Container c : containerArrayAll) {
 			for (Component c2 : c.getComponents()) {
 				if (c2 instanceof AbstractButton)
-					((AbstractButton) c2).addActionListener(this.buttonhandler);
+					((AbstractButton) c2).addActionListener(buttonhandler);
 				else if (c2 instanceof JComboBox)
-					((JComboBox<?>) c2).addActionListener(this.buttonhandler);
+					((JComboBox<?>) c2).addActionListener(buttonhandler);
 			}
 		}
 
 		// COLOR
-		for (java.awt.Container c : this.containerArrayAll) {
+		for (java.awt.Container c : containerArrayAll) {
 			c.setBackground(Color.WHITE);
 			for (Component c2 : c.getComponents()) {
 				if (!(c2 instanceof AbstractButton) || (c2 instanceof JRadioButton) || (c2 instanceof JCheckBox))
@@ -397,7 +412,7 @@ class GUI extends JFrame { // package-private
 		}
 
 		// TEXTAREAS
-		for (Container c : this.containerArrayAll) {
+		for (Container c : containerArrayAll) {
 			for (Component c2 : c.getComponents()) {
 				if (c2 instanceof JTextArea) {
 					((JTextArea) c2).setEditable(false);
@@ -408,32 +423,32 @@ class GUI extends JFrame { // package-private
 			}
 		}
 
-		for (Container c : this.containerArrayIframes) {
+		for (Container c : containerArrayIframes) {
 			for (Component c2 : c.getComponents()) {
 				if (c2 instanceof JTextArea) {
-					((JTextArea) c2).addComponentListener(this.texthandler);
+					((JTextArea) c2).addComponentListener(texthandler);
 					((JTextArea) c2).setEditable(true);
 				}
 			}
 		}
 
 		// SPINNERS
-		this.spin1a_amount.setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.01));
-		this.spin1a_amount.setEditor(new JSpinner.NumberEditor(this.spin1a_amount, "##0.0#"));
+		spin1a_amount.setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.01));
+		spin1a_amount.setEditor(new JSpinner.NumberEditor(spin1a_amount, "##0.0#"));
 
-		this.spin1a_expiration.setModel(new SpinnerDateModel(new Date(), new Date(946677600921L),
+		spin1a_expiration.setModel(new SpinnerDateModel(new Date(), new Date(946677600921L),
 				new Date(32535122400921L), Calendar.DAY_OF_YEAR));
-		this.spin1a_expiration.setEditor(new JSpinner.DateEditor(this.spin1a_expiration, "d.M.y"));
+		spin1a_expiration.setEditor(new JSpinner.DateEditor(spin1a_expiration, "d.M.y"));
+		
+		spin2a_amount.setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.01));
+		spin2a_amount.setEditor(new JSpinner.NumberEditor(spin2a_amount, "##0.0#"));
 
-		this.spin2a_amount.setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.01));
-		this.spin2a_amount.setEditor(new JSpinner.NumberEditor(this.spin2a_amount, "##0.0#"));
-
-		this.spin0_port.setModel(new SpinnerNumberModel(0, 0, 65535, 1));
+		spin0_port.setModel(new SpinnerNumberModel(0, 0, 65535, 1));
 
 		// TABLE
 		DefaultTableModel temp = new DefaultTableModel(10, 1);
-		this.table1a_allergens.setModel(temp);
-		this.table1a_allergens.setBorder(new LineBorder(Color.BLACK));
+		table1a_allergens.setModel(temp);
+		table1a_allergens.setBorder(new LineBorder(Color.BLACK));
 
 	}// end method config
 
@@ -442,543 +457,760 @@ class GUI extends JFrame { // package-private
 
 	// TOGGLE PANELS
 	/**
-	 * This method will enable/disable all components on all panels found in {@link recipeTool.GUI#containerArrayPanels}
-	 * @param enable {@code true} to enable all panels<br>
-	 * <blockquote>{@code false} to disable all panels</blockquote>
+	 * This method will enable/disable all components on all panels found in
+	 * {@link recipeTool.GUI#containerArrayPanels}
+	 * 
+	 * @param enable
+	 *            {@code true} to enable all panels<br>
+	 *            <blockquote>{@code false} to disable all panels</blockquote>
 	 */
 	private void togglePanels(boolean enable) {
-		for (Container c : this.containerArrayPanels) {
+		for (Container c : containerArrayPanels) {
 			for (Component c2 : c.getComponents()) {
 				c2.setEnabled(enable);
 			}
 		}
 	}// end method togglePanels
 
-	//TEST CONNECTION
+	// TEST CONNECTION
 	/**
-	 * This method will test if there is a valid connection established to a database,<br>
-	 * using {@link recipeTool.Database#isConnected()}<p>
-	 * Connection Icon is set accordingly, and save/load buttons enabled or disabled.
-	 * @return Nothing.
+	 * This method will test if there is a valid connection established to a
+	 * database,<br>
+	 * using {@link recipeTool.Database#isConnected()}
+	 * <p>
+	 * Connection Icon is set accordingly, and save/load buttons enabled or
+	 * disabled.
+	 * 
+	 * 
 	 */
 	private void testConnection() {
 		boolean established = Database.isConnected();
-		GUI.this.btn0_settings_load.setEnabled(established);
-		GUI.this.btn0_settings_save.setEnabled(established);
-		GUI.this.btn0_settings_test.setEnabled(established);
-		GUI.this.lbl_connection.setIcon(established == true ? this.connected : this.disconnected);
+		btn0_settings_load.setEnabled(established);
+		btn0_settings_save.setEnabled(established);
+		btn0_settings_test.setEnabled(established);
+		lbl_connection.setIcon(established == true ? connected : disconnected);
 	}
-	
+
 	// CLEAR FIELDS
-	private void clearFields(int tabNumber) {
-		java.awt.Container container = null;
+	private void clearFields(int... tabNumber) {
+		if(tabNumber.length == 0) tabNumber = new int[]{0,1,2,3,11,21};
+		Container container = null;
 		Dimension prefSize;
-		switch (tabNumber) {
-
-		case 0: // settings
-			container = this.iframe0_settings.getContentPane();
-			break;
-
-		case 1: // ingredients tab
-			container = this.panel_1;
-			break;
-
-		case 2: // recipes tab
-			container = this.panel_2;
-			this.lbl2_enoughValue.setText("");
-			break;
-
-		case 3: // filter panel
-			container = this.panel_3;
-			break;
-
-		case 11: // add ingredient internal frame
-			container = this.iframe1_add.getContentPane();
-			break;
-
-		case 21: // add recipe internal frame
-			container = this.iframe2_add.getContentPane();
-			this.btn2a_more.setEnabled(true);
-			this.btn2a_less.setEnabled(false);
-			for (JComboBox<?> i : this.combx2a_temp) {
-				if (i != null)
-					this.iframe2_add.remove(i);
+		for (int z : tabNumber){
+			switch (z) {
+	
+			case 0: // settings
+				container = iframe0_settings.getContentPane();
+				break;
+	
+			case 1: // ingredients tab
+				container = panel_1;
+				break;
+	
+			case 2: // recipes tab
+				container = panel_2;
+				lbl2_enoughValue.setText("");
+				break;
+	
+			case 3: // filter panel
+				container = panel_3;
+				break;
+	
+			case 11: // add ingredient internal frame
+				container = iframe1_add.getContentPane();
+				break;
+				
+			case 21: // add recipe internal frame
+				container = iframe2_add.getContentPane();
+				btn2a_more.setEnabled(true);
+				btn2a_less.setEnabled(false);
+				for (JComboBox<?> i : combx2a_temp) {
+					if (i != null)
+						iframe2_add.remove(i);
+				}
+				for (JSpinner j : spin2a_temp) {
+					if (j != null)
+						iframe2_add.remove(j);
+				}
+				for (JLabel k : lbl2a_temp) {
+					if (k != null)
+						iframe2_add.remove(k);
+				}
+				break;
+			default: // this should not happen
+				throw new IllegalArgumentException();
 			}
-			for (JSpinner j : this.spin2a_temp) {
-				if (j != null)
-					this.iframe2_add.remove(j);
+	
+			// clear every component in selected container
+			for (Component c : container.getComponents()) {
+				if (c instanceof JTextArea || c instanceof JTextField)
+					((JTextComponent) c).setText("");
+				else if (c instanceof JSpinner) {
+					if (((JSpinner) c).getModel().getClass().getSimpleName().equals("SpinnerNumberModel"))
+						((JSpinner) c).setValue(0.0);
+					else if (((JSpinner) c).getModel().getClass().getSimpleName().equals("SpinnerDateModel"))
+						((JSpinner) c).setValue(new Date());
+				} else if (c instanceof JTable) {
+					((JTable) c).clearSelection();
+					if (((JTable) c).getCellEditor() != null)
+						((JTable) c).getCellEditor().stopCellEditing();
+					DefaultTableModel tableModel = (DefaultTableModel) ((JTable) c).getModel();
+					int rightRowCount = tableModel.getRowCount();
+					tableModel.setRowCount(0);
+					tableModel.setRowCount(rightRowCount);
+				} else if (c instanceof JList)
+					((JList<?>) c).clearSelection();
+				else if (c instanceof JCheckBox)
+					((JCheckBox) c).setSelected(false);
 			}
-			for (JLabel k : this.lbl2a_temp) {
-				if (k != null)
-					this.iframe2_add.remove(k);
+	
+			// if container is internal frame, then reset the size
+			if (z == 0 || z == 11 || z == 12 || z == 21){
+				Container iframe = container.getParent().getParent().getParent();
+				prefSize = iframe.getLayout().preferredLayoutSize(rootPane);
+				iframe.setPreferredSize(prefSize);
+				iframe.revalidate();
 			}
-			break;
-		default: // this should not happen
-			throw new IllegalArgumentException();
-		}
-		
-		// clear every component in selected container
-		for (Component c : container.getComponents()) {
-			if (c instanceof JTextArea || c instanceof JTextField) ((JTextComponent) c).setText("");
-			else if (c instanceof JSpinner) {
-				if (((JSpinner) c).getModel().getClass().getSimpleName().equals("SpinnerNumberModel"))
-					((JSpinner) c).setValue(0.0);
-				else if (((JSpinner) c).getModel().getClass().getSimpleName().equals("SpinnerDateModel"))
-					((JSpinner) c).setValue(new Date());
-			} else if (c instanceof JTable) {
-				((JTable) c).clearSelection();
-				if (((JTable) c).getCellEditor() != null)
-					((JTable) c).getCellEditor().stopCellEditing();
-				DefaultTableModel tableModel = (DefaultTableModel) ((JTable) c).getModel();
-				int rightRowCount = tableModel.getRowCount();
-				tableModel.setRowCount(0);
-				tableModel.setRowCount(rightRowCount);
-			} else if (c instanceof JList)
-				((JList<?>) c).clearSelection();
-			else if (c instanceof JCheckBox)
-				((JCheckBox) c).setSelected(false);
-		}
-		
-		// if container is internal frame, then reset the size
-		Container iframe = container.getParent().getParent().getParent();
-		if (iframe instanceof JInternalFrame) {
-			prefSize = iframe.getLayout().preferredLayoutSize(this.rootPane);
-			iframe.setPreferredSize(prefSize);
-			iframe.revalidate();
 		}
 	}// end method clearFields
 
 	// REFRESH FIELDS
-	private void refreshFields() {
-
-		String iname = this.list1_ingredients.getSelectedValue();
-		if ((iname != null) && (Storage.hasIngredient(iname))) {
-			this.text1_unit.setText(Storage.getUnit(iname).toString());
-			this.text1_amount.setText(((Double) new BigDecimal(Storage.getAmount(iname))
-					.setScale(2, RoundingMode.HALF_UP).doubleValue()).toString());
-
-			if (Storage.getAllergens(iname) == null)
-				this.text1_allergens.setText("no allergens");
-			else
-				this.text1_allergens.setText(String.join(", ", Storage.getAllergens(iname)));
-
-			if (Storage.getExpiration(iname) == null)
-				this.text1_expiration.setText("does not expire");
-			else
-				this.text1_expiration.setText(DateFormat.getDateInstance().format(Storage.getExpiration(iname)));
-		}
-		String rname = this.list2_recipes.getSelectedValue();
-		if ((rname != null) && (Book.hasRecipe(rname))) {
-			StringBuilder temp = new StringBuilder();
-			for (String iname1 : Book.listIngredients(rname)) {
-				temp.append(new BigDecimal(Book.getAmount(rname, iname1)).setScale(2, RoundingMode.HALF_UP).toString());
-				temp.append(" ");
-				temp.append(Storage.getUnit(iname1));
-				temp.append(" ");
-				temp.append(iname1);
-				temp.append("\n");
+	private void refreshFields(int... numbers) {
+		if (numbers.length == 0) numbers = new int[]{1,2};
+		for (int z : numbers){
+			switch(z){
+			
+			case 1: // tab ingredients
+				String iname = list1_ingredients.getSelectedValue();
+				if ((iname != null) && (Storage.hasIngredient(iname))) {
+					text1_unit.setText(Storage.getUnit(iname).toString());
+					text1_amount.setText(
+							((Double) new BigDecimal(Storage.getAmount(iname)).setScale(2, RoundingMode.HALF_UP).doubleValue())
+									.toString());
+		
+					if (Storage.getAllergens(iname) == null)
+						text1_allergens.setText("no allergens");
+					else
+						text1_allergens.setText(String.join(", ", Storage.getAllergens(iname)));
+		
+					if (Storage.getExpiration(iname) == null)
+						text1_expiration.setText("does not expire");
+					else
+						text1_expiration.setText(DateFormat.getDateInstance().format(Storage.getExpiration(iname)));
+				}
+				break;
+				
+			case 2: //tab recipes
+				String rname = list2_recipes.getSelectedValue();
+				if ((rname != null) && (Book.hasRecipe(rname))) {
+					StringBuilder temp = new StringBuilder();
+					for (String iname1 : Book.listIngredients(rname)) {
+						temp.append(new BigDecimal(Book.getAmount(rname, iname1)).setScale(2, RoundingMode.HALF_UP).toString());
+						temp.append(" ");
+						temp.append(Storage.getUnit(iname1));
+						temp.append(" ");
+						temp.append(iname1);
+						temp.append("\n");
+					}
+					text2_ingredients.setText(temp.toString().trim());
+		
+					if (Book.getInsturction(rname) == null || Book.getInsturction(rname).equals(""))
+						text2_instruction.setText("no instruction");
+					else
+						text2_instruction.setText(Book.getInsturction(rname));
+		
+					if (Book.getAllergens(rname) == null || Book.getAllergens(rname).isEmpty())
+						text2_allergens.setText("no allergens");
+					else
+						text2_allergens.setText(String.join(", ", Book.getAllergens(rname)));
+		
+					if (Book.getExpiration(rname)[0] == null)
+						text2_expiration.setText("no expiring ingredients");
+					else
+						text2_expiration
+								.setText(String.join("", DateFormat.getDateInstance().format(Book.getExpiration(rname)[0]), " ",
+										(String) Book.getExpiration(rname)[1]));
+		
+					lbl2_enoughValue.setText(Boolean.toString(Book.getEnough(rname)));
+				}
+				break;
+				
+			case 12: // internal frame modify ingredients
+				iname = list1_ingredients.getSelectedValue();
+				txtf1a_name.setText(iname);
+				spin1a_amount.setValue(Storage.getAmount(iname));
+				combx1a_unit.setSelectedItem(Storage.getUnit(iname));
+				
+				if (Storage.getExpiration(iname) == null){
+					chckbx1a_noExpiry.setSelected(true);
+					spin1a_expiration.setEnabled(false);
+				}
+				else {
+					chckbx1a_noExpiry.setSelected(false);
+					spin1a_expiration.setEnabled(true);
+					spin1a_expiration.setValue(Storage.getExpiration(iname));
+				}
+				int i=0;
+				if (Storage.getAllergens(iname) != null) {
+					for (String temp : Storage.getAllergens(iname)) {
+						table1a_allergens.setValueAt(temp, i, 0);
+						i++;
+					} 
+				}
+				break;
+			case 22: // internal frame modify recipes
+				rname = list2_recipes.getSelectedValue();
+				txtf2a_name.setText(rname);
+				text2a_instruction.setText(Book.getInsturction(rname));
+				LinkedHashSet<String> inames = Book.listIngredients(rname);
+				int iCount = inames.size();
+				rows(iCount-1);
+				
+				iname = (String)inames.toArray()[0];
+				combx2a_ingredient.setSelectedItem(iname);
+				spin2a_amount.setValue(Book.getAmount(rname, iname));
+				
+				for (int p = 1; p <= iCount-1; p++){
+					iname = (String)inames.toArray()[p];
+					combx2a_temp[p].setSelectedItem(iname);
+					spin2a_temp[p].setValue(Book.getAmount(rname, iname));
+				}
+				break;
+				
+			default: throw new IllegalArgumentException();
 			}
-			this.text2_ingredients.setText(temp.toString().trim());
-
-			if (Book.getInsturction(rname) == null || Book.getInsturction(rname).equals(""))
-				this.text2_instruction.setText("no instruction");
-			else
-				this.text2_instruction.setText(Book.getInsturction(rname));
-
-			if (Book.getAllergens(rname) == null || Book.getAllergens(rname).isEmpty())
-				this.text2_allergens.setText("no allergens");
-			else
-				this.text2_allergens.setText(String.join(", ", Book.getAllergens(rname)));
-
-			if (Book.getExpiration(rname)[0] == null)
-				this.text2_expiration.setText("no expiring ingredients");
-			else
-				this.text2_expiration
-						.setText(String.join("", DateFormat.getDateInstance().format(Book.getExpiration(rname)[0]), " ",
-								(String) Book.getExpiration(rname)[1]));
-
-			this.lbl2_enoughValue.setText(Boolean.toString(Book.getEnough(rname)));
 		}
+		
+		
+		
 	}// end method refreshFields
-	
+
 	// REFRESH LIST
-	private void refreshLists() {
-		this.list1_ingredients.setListData(Storage.listIngredients().toArray(new String[0]));
-		this.combx2a_ingredient.removeAllItems();
-		for (String i : Storage.listIngredients()) {
-			this.combx2a_ingredient.addItem(i);
+	private void refreshLists(int... numbers) {
+		if (numbers.length == 0) numbers = new int[]{1,2,3,21};
+		for (int z : numbers){
+			switch(z){
+			case 1:	
+				list1_ingredients.setListData(Storage.listIngredients().toArray(new String[0]));
+				break;
+			case 2:
+				if (filteringActive){
+					List<String> mustHave = list3_mustHave.getSelectedValuesList();
+					List<String> avoidAllergens = list3_avoidAllergens.getSelectedValuesList();
+					boolean enough = chckbx3_noShopping.isSelected();
+					boolean sort = rdbtn3_az.isSelected();
+					String[] filterResult = Book.filterRecipes(mustHave, avoidAllergens, enough, sort);
+					if (filterResult == null) {
+						list2_recipes.setListData(new String[] { "no matches found" });
+						list2_recipes.setEnabled(false);
+					} else
+						list2_recipes.setListData(filterResult);
+				} 
+				else list2_recipes.setListData(Book.listRecipes().toArray(new String[0]));
+				break;
+			case 21:
+				combx2a_ingredient.removeAllItems();
+				for (String i : Storage.listIngredients()) {
+					combx2a_ingredient.addItem(i);
+				}
+				combx2a_ingredient.insertItemAt("Select", 0);
+				combx2a_ingredient.setSelectedIndex(0);
+				break;
+			case 3:
+				if (filteringActive == false) {
+					list3_mustHave.setListData(Storage.listIngredients().toArray(new String[0]));
+					list3_avoidAllergens.setListData(Storage.listAllergens().toArray(new String[0]));
+				}
+				break;
+		
+
+				default: throw new IllegalArgumentException();
+			}
 		}
-		this.combx2a_ingredient.insertItemAt("Select", 0);
-		this.combx2a_ingredient.setSelectedIndex(0);
-		if (this.filteringActive == false) {
-			this.list3_mustHave.setListData(Storage.listIngredients().toArray(new String[0]));
-			this.list3_avoidAllergens.setListData(Storage.listAllergens().toArray(new String[0]));
-			this.list2_recipes.setListData(Book.listRecipes().toArray(new String[0]));
+	}// end method refreshList
+	
+	private void addIngredient(boolean modify){
+		String name = txtf1a_name.getText();
+		double amount = ((SpinnerNumberModel) spin1a_amount.getModel()).getNumber().doubleValue();
+		Unit unit = (Unit) combx1a_unit.getSelectedItem();
+		Date expiration = null;
+		if (spin1a_expiration.isEnabled()) {
+			expiration = (Date) spin1a_expiration.getValue();
+		}
+		
+		TreeSet<String> allergen = new TreeSet<>();
+		
+		for (int i = 0; i < 10; i++) {
+			String temp = (String) table1a_allergens.getValueAt(i, 0);
+			if (temp != null)
+				allergen.add(temp);
+		}
+		if (table1a_allergens.isEditing()) {
+			table1a_allergens.getCellEditor().stopCellEditing();
+			String unfinished = (String) ((CellEditor)table1a_allergens.getCellEditor()).getCellEditorValue();
+			if ((unfinished != null) && (unfinished.equals("") == false))
+				allergen.add(unfinished);
+		}
+		
+		if (modify == false && (name != null) && (name.equals("") == false)){
+			if (Storage.hasIngredient(name))
+				if (Dialogs.warningOC(
+						"The ingredient called " + name + " already exists. Do you want to overwrite?") == 2)
+					return;
+		}
+		
+		try {
+			Storage.setIngredient(name, amount, unit, allergen, expiration);
+			String original = list1_ingredients.getSelectedValue();
+			if (name.equals(original) == false){
+				Book.renameIngredient(original, name);
+				Storage.deleteIngredient(original);
+			}
+		} catch (Exception exception) {
+			Dialogs.notice(exception.getMessage());
 			return;
 		}
+		clearFields(1,2,11);
+		refreshLists(1,21,3);
+
+		togglePanels(true);
+		iframe1_add.setVisible(false);
+	}// end method addIngredient
 	
-		List<String> mustHave = this.list3_mustHave.getSelectedValuesList();
-		List<String> avoidAllergens = this.list3_avoidAllergens.getSelectedValuesList();
-		boolean enough = this.chckbx3_noShopping.isSelected();
-		boolean sort = this.rdbtn3_az.isSelected();
-		String[] filterResult = Book.filterRecipes(mustHave, avoidAllergens, enough, sort);
-		if (filterResult == null){
-			this.list2_recipes.setListData(new String[] { "no matches found" });
-			this.list2_recipes.setEnabled(false);
+	private void addRecipe(boolean modify){
+		String name = txtf2a_name.getText();
+		String instruction = text2a_instruction.getText();
+		LinkedHashMap<String, Double> ingredients = new LinkedHashMap<>();
+		if (combx2a_ingredient.getSelectedIndex() != 0)
+			ingredients.put((String) combx2a_ingredient.getSelectedItem(),
+					((SpinnerNumberModel) spin2a_amount.getModel()).getNumber().doubleValue());
+		for (int i = 1; i <= counter2a - 1; i++) {
+			if (combx2a_temp[i].getSelectedIndex() != 0)
+				ingredients.put((String) combx2a_temp[i].getSelectedItem(),
+						((SpinnerNumberModel) spin2a_temp[i].getModel()).getNumber().doubleValue());
 		}
-		else this.list2_recipes.setListData(filterResult);
+		
+		if (modify == false && (name != null) && (name.equals("") == false)){
+			if (Book.hasRecipe(name))
+				if (Dialogs
+						.warningOC("The recipe called " + name + " already exists. Do you want to overwrite?") == 2)
+					return;
+		}
+		
+		try {
+			Book.setRecipe(name, instruction, ingredients);
+			if (name.equals(list2_recipes.getSelectedValue()) == false) Book.deleteRecipe(list2_recipes.getSelectedValue());
+		} catch (Exception exception) {
+			Dialogs.notice(exception.getMessage());
+			return;
+		}
+
+		clearFields(2,21);
+		refreshLists(2);
+		togglePanels(true);
+		counter2a = 0;
+		iframe2_add.setVisible(false);
+	}// end method addRecipe
+	
+	private void deleteIngredient(){
+		String iname = list1_ingredients.getSelectedValue();
+		
+		if (iname == null) {
+			Dialogs.notice("You must first select an ingredient.");
+			return;
+		}
+
+		TreeSet<String> temp = Book.whoHas(iname);
+		if (temp.isEmpty() == false) {
+			if (Dialogs.warningOC(
+					"If you delete ingredient in here, it will also be deleted from all recipes.\nThe following recipes will be affected: "
+							+ temp.toString()) == 2)
+				return;
+		}
+		Storage.deleteIngredient(iname);
+		Book.deleteAllIngredients(iname);
+
+		clearFields();
+		refreshLists(1,2,3,21);
+	}// end method deleteIngredient
+	
+	private void deleteRecipe(){
+		String rname = list2_recipes.getSelectedValue();
+
+		if (rname == null) {
+			Dialogs.notice("You must first select a recipe.");
+			return;
+		}
+
+		Book.deleteRecipe(rname);
+		clearFields(2);
+		refreshLists(2);
+	}// end method deleteRecipe
 
 
-	}// end method refreshList
+	
+	private void rows(int value){
+		if (value == 0) return;
+		for (int z = Math.abs(value); z >= 1; z--){
+			if (value > 0) {
+				if (counter2a < 2)
+					counter2a = 1;
+				btn2a_less.setEnabled(true);
+				combx2a_temp[counter2a] = new JComboBox<>(
+						Storage.listIngredients().toArray(new String[0]));
+				combx2a_temp[counter2a].insertItemAt("Select", 0);
+				combx2a_temp[counter2a].setSelectedIndex(0);
+				combx2a_temp[counter2a].setBackground(Color.WHITE);
+				combx2a_temp[counter2a].addActionListener(buttonhandler);
+				iframe2_add.getContentPane().add(combx2a_temp[counter2a],
+						"growx,cell 2 " + (1 + counter2a));
+				spin2a_temp[counter2a] = new JSpinner();
+				spin2a_temp[counter2a].setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.01));
+				spin2a_temp[counter2a]
+						.setEditor(new JSpinner.NumberEditor(spin2a_temp[counter2a], "##0.0#"));
+				iframe2_add.getContentPane().add(spin2a_temp[counter2a],
+						"growx,cell 3 " + (1 + counter2a));
+				lbl2a_temp[counter2a] = new JLabel();
+				iframe2_add.getContentPane().add(lbl2a_temp[counter2a],
+						"growx,cell 4 " + (1 + counter2a));
+				if (counter2a < 10)
+					counter2a++;
+				if (counter2a == 10)
+					btn2a_more.setEnabled(false);
+				Dimension prefSize = iframe2_add.getLayout().preferredLayoutSize(rootPane);
+				iframe2_add.setPreferredSize(prefSize);
+				iframe2_add.revalidate();
+			}
+			if (value < 0) {
+				iframe2_add.remove(combx2a_temp[counter2a - 1]);
+				iframe2_add.remove(spin2a_temp[counter2a - 1]);
+				iframe2_add.remove(lbl2a_temp[counter2a - 1]);
+				counter2a--;
+				if (counter2a < 2)
+					btn2a_less.setEnabled(false);
+				btn2a_more.setEnabled(true);
+				Dimension prefSize = iframe2_add.getLayout().preferredLayoutSize(rootPane);
+				iframe2_add.setPreferredSize(prefSize);
+				iframe2_add.revalidate();
+			}
+		}
+	}// end method rows
+	
+	private void maria(DB command){
+		switch(command){
+		case CONNECT:
+			String ip = txtf0_ip.getText();
+			String port = String.valueOf(spin0_port.getValue());
+			String user = txtf0_user.getText();
+			String pass = String.valueOf(txtf0_pass.getPassword());
+			try {
+				Settings.writeSettings(ip,port,user,pass);
+			} catch (Exception exception) {
+				Dialogs.error(
+						"The application was unable to save your preferences, "
+						+ "and they will be forgotten when you exit.");
+			}
+				Database.setup(ip, port, user, pass, "recipe_tool");
+			try {
+				RecipeTool.prepareDatabase();
+				Dialogs.notice("Connected Successfully!");
+			} catch (Exception exception) {
+				Database.close();
+				Dialogs.error("Database setup did not succeed.\n" + exception);
+			} finally {
+				testConnection();
+			}
+			break;
+			
+		case SAVE:
+			try {
+				RecipeTool.save();
+				Dialogs.notice("Saved Successfully!");
+			} catch (Exception exception) {
+				Database.close();
+				Dialogs.error("Saving failed!\n" + exception);
+			} finally {
+				testConnection();
+			}
+			break;
+			
+		case LOAD:
+			try {
+				Storage.clear();
+				Book.clear();
+				refreshLists();
+				clearFields();
+				RecipeTool.load();
+				refreshLists();
+				Dialogs.notice("Loaded Successfully!");
+			} catch (Exception exception) {
+				Database.close();
+				Dialogs.error("Loading failed!\n" + exception);
+				exception.printStackTrace();
+			} finally {
+				testConnection();
+			}
+			break;
+			
+		case TEST:
+			try {
+				RecipeTool.test();
+				refreshLists();
+				Dialogs.notice("Test Values Loaded Successfully!");
+			} catch (Exception exception) {
+				Database.close();
+				Dialogs.error("Loading failed!\n" + exception);
+			} finally {
+				testConnection();
+			}
+			break;
+			
+		default: throw new IllegalArgumentException();
+		}
+	}
+	
+	
 
 	// EVENT HANDLERS
 	// ***********************************************************************************************************************
 
 	// LISTHANDLER
+	/**
+	 * This class handles events for lists.
+	 * 
+	 * @author Ville Salmela
+	 *
+	 */
 	private class ListHandler implements ListSelectionListener {
 
+		/**
+		 * This method will run, when an item selection is changed. The method
+		 * will invoke {@link recipeTool.GUI#refreshFields()}
+		 */
 		@Override
 		public void valueChanged(ListSelectionEvent event) {
-			refreshFields();
+			try {
+				Object source = event.getSource();
+				if (source == list1_ingredients) refreshFields(1);
+				if (source == list2_recipes) refreshFields(2);
+			} catch (Exception exception) {
+				RecipeTool.mayday(exception);
+			}
 		}// end method valueChanged
 	}// end class ListHandler
 
 	// BUTTONHANDLER
+	/**
+	 * This class handles events for buttons.
+	 * 
+	 * @author Ville Salmela
+	 *
+	 */
 	private class ButtonHandler implements ActionListener {
 
+		/**
+		 * This method runs, when an action occurs.<br>
+		 * The method will further delegate the adding, modifying and deleting
+		 * of ingredients and recipes.<br>
+		 * The method will also initiate recipe filtering.<br>
+		 * The method will also initiate loading from and saving to database.
+		 */
 		@Override
-		public void actionPerformed(ActionEvent event) {
-			Object source = event.getSource();
-
-			// CLOSE
-			if (source == GUI.this.btn1a_cancel) {
-				GUI.this.iframe1_add.setVisible(false);
-				clearFields(11);
-				togglePanels(true);
-			}
-
-			else if (source == GUI.this.btn2a_cancel) {
-				GUI.this.iframe2_add.setVisible(false);
-				clearFields(21);
-				GUI.this.counter2a = 0;
-				togglePanels(true);
-			}
-
-			else if (source == GUI.this.btn0_settings_close) {
-				GUI.this.iframe0_settings.setVisible(false);
-				clearFields(0);
-				GUI.this.btn0_settings_open.setEnabled(true);
-				togglePanels(true);
-			}
-
-			// OPEN
-			else if (source == GUI.this.btn1_add) {
-				togglePanels(false);
-				GUI.this.iframe1_add.setVisible(true);
-			}
-
-			else if (source == GUI.this.btn2_add) {
-				togglePanels(false);
-				GUI.this.btn2a_less.setEnabled(false);
-				GUI.this.iframe2_add.setVisible(true);
-			}
-
-			else if (source == GUI.this.btn0_settings_open) {
-				togglePanels(false);
-				testConnection();
-				GUI.this.btn0_settings_open.setEnabled(false);
-				GUI.this.iframe0_settings.setVisible(true);
-			}
-
-			// RADIO BUTTONS
-			else if (source == GUI.this.rdbtn3_az) {
-				GUI.this.rdbtn3_az.setSelected(true);
-				GUI.this.rdbtn3_ex.setSelected(false);
-			} else if (source == GUI.this.rdbtn3_ex) {
-				GUI.this.rdbtn3_az.setSelected(false);
-				GUI.this.rdbtn3_ex.setSelected(true);
-			}
-
-			// DELETE
-			else if (source == GUI.this.btn1_delete) {
-				String iname = GUI.this.list1_ingredients.getSelectedValue();
-
-				if (iname == null) {
-					Dialogs.notice("You must first select an ingredient.");
-					return;
-				}
-
-				TreeSet<String> temp = Book.whoHas(iname);
-				if (temp.isEmpty() == false) {
-					if (Dialogs.warningOC(
-							"If you delete ingredient in here, it will also be deleted from all recipes.\nThe following recipes will be affected: "
-									+ temp.toString()) == 2)
-						return;
-				}
-				Storage.deleteIngredient(iname);
-				Book.deleteAllIngredients(iname);
-
-				clearFields(1);
-				refreshLists();
-				refreshFields();
-			}
-
-			else if (source == GUI.this.btn2_delete) {
-				String rname = GUI.this.list2_recipes.getSelectedValue();
-
-				if (rname == null) {
-					Dialogs.notice("You must first select a recipe.");
-					return;
-				}
-
-				Book.deleteRecipe(rname);
-				clearFields(2);
-				refreshLists();
-
-			}
-
-			// FILTER
-			else if (source == GUI.this.btn3_filter) {
-				GUI.this.filteringActive = (GUI.this.filteringActive == true ? false : true);
-
-				clearFields(2);
-				refreshLists();
-				boolean able = !GUI.this.filteringActive;
+		public void actionPerformed(ActionEvent event){
+			try{
+				Object source = event.getSource();
 				
-				for (Container c : containerArrayPanels){
-					for (Component c2 : c.getComponents()){
-						if (c2 instanceof AbstractButton) c2.setEnabled(able);
+				// DELETE
+				if (source == btn1_delete) {
+					deleteIngredient();
+				}
+				else if (source == btn2_delete) {
+					deleteRecipe();
+				}
+				
+				// ADD
+				else if (source == btn1a_ok) {
+					addIngredient(iframe1_add.getTitle().equals("Modify Ingredient"));
+				}
+	
+				else if (source == btn2a_ok) {
+					addRecipe(iframe2_add.getTitle().equals("Modify Recipe"));
+				}
+	
+				// TEMPORARY UI COMPONENTS
+				else if (source == btn2a_more) {
+					rows(1);
+				}
+	
+				else if (source == btn2a_less) {
+					rows(-1);
+				}
+				
+				// DATABASE
+				else if (source == btn0_settings_connect) {
+					maria(DB.CONNECT);
+				}
+	
+				else if (source == btn0_settings_save) {
+					maria(DB.SAVE);
+				}
+	
+				else if (source == btn0_settings_load) {
+					maria(DB.LOAD);
+				}
+	
+				else if (source == btn0_settings_test) {
+					maria(DB.TEST);
+				}
+				
+				// RADIO BUTTONS
+				else if (source == rdbtn3_az) {
+					rdbtn3_az.setSelected(true);
+					rdbtn3_ex.setSelected(false);
+				} else if (source == rdbtn3_ex) {
+					rdbtn3_az.setSelected(false);
+					rdbtn3_ex.setSelected(true);
+				}
+				
+				// CLOSE
+				else if (source == btn1a_cancel) {
+					iframe1_add.setVisible(false);
+					clearFields(11);
+					togglePanels(true);
+				}
+				
+				else if (source == btn2a_cancel) {
+					iframe2_add.setVisible(false);
+					clearFields(21);
+					counter2a = 0;
+					togglePanels(true);
+				}
+	
+				else if (source == btn0_settings_close) {
+					iframe0_settings.setVisible(false);
+					clearFields(0);
+					btn0_settings_open.setEnabled(true);
+					togglePanels(true);
+				}
+	
+				// OPEN
+				else if (source == btn1_add) {
+					iframe1_add.setTitle("Add Ingredient");
+					btn1a_ok.setText("Add to Storage");
+					
+					togglePanels(false);
+					iframe1_add.setVisible(true);
+				}
+				
+				else if (source == btn1_modify) {
+					String iname = list1_ingredients.getSelectedValue();
+	
+					if (iname == null) {
+						Dialogs.notice("You must first select an ingredient.");
+						return;
+					}
+					iframe1_add.setTitle("Modify Ingredient");
+					btn1a_ok.setText("Modify");
+					
+					refreshFields(12);
+					
+					togglePanels(false);
+					iframe1_add.setVisible(true);
+				}
+	
+				else if (source == btn2_add) {
+					iframe2_add.setTitle("Add Recipe");
+					btn2a_ok.setText("Add to Book");
+					
+					togglePanels(false);
+					btn2a_less.setEnabled(false);
+					iframe2_add.setVisible(true);
+				}
+				
+				else if (source == btn2_modify) {
+					String rname = list2_recipes.getSelectedValue();
+	
+					if (rname == null) {
+						Dialogs.notice("You must first select a recipe.");
+						return;
+					}
+					iframe2_add.setTitle("Modify Recipe");
+					btn2a_ok.setText("Modify");
+					
+					refreshFields(22);
+					
+					togglePanels(false);
+					btn2a_less.setEnabled(false);
+					iframe2_add.setVisible(true);
+				}
+	
+				else if (source == btn0_settings_open) {
+					togglePanels(false);
+					testConnection();
+					btn0_settings_open.setEnabled(false);
+					iframe0_settings.setVisible(true);
+				}
+	
+				// FILTER
+				else if (source == btn3_filter) {
+					filteringActive = (filteringActive == true ? false : true);
+	
+					clearFields(2);
+					refreshLists(2);
+					boolean able = !filteringActive;
+	
+					for (Container c : containerArrayPanels) {
+						for (Component c2 : c.getComponents()) {
+							if (c2 instanceof AbstractButton)
+								c2.setEnabled(able);
+						}
+					}
+					list3_avoidAllergens.setEnabled(able);
+					list3_mustHave.setEnabled(able);
+					lbl3_noShopping.setEnabled(able);
+					lbl3_sortBy.setEnabled(able);
+	
+					lbl2_filteringActive
+							.setText((filteringActive == true ? "Filtering ON" : "Filtering OFF"));
+					if (filteringActive == false) {
+						list2_recipes.setEnabled(true);
+						testConnection();
+					}
+					btn3_filter.setEnabled(true);
+				}
+	
+				// INTERACTIVE UI
+				else if ((source == combx2a_ingredient)
+						&& ((combx2a_ingredient.getSelectedIndex() > 0))) {
+					lbl2a_unit
+							.setText(Storage.getUnit(combx2a_ingredient.getSelectedItem().toString()).toString());
+				}
+	
+				else if (source == chckbx1a_noExpiry) {
+					spin1a_expiration.setEnabled(!chckbx1a_noExpiry.isSelected());
+				}
+				
+				else if (source instanceof JComboBox<?>) {
+					JComboBox<?> temp = (JComboBox<?>) source;
+					int j = 0;
+					for (JComboBox<String> i : combx2a_temp) {
+						if (temp.equals(i)) {
+							lbl2a_temp[j].setText(Storage.getUnit(i.getSelectedItem().toString()).toString());
+							break;
+						}
+						j++;
 					}
 				}
-				GUI.this.list3_avoidAllergens.setEnabled(able);
-				GUI.this.list3_mustHave.setEnabled(able);
-				GUI.this.lbl3_noShopping.setEnabled(able);
-				GUI.this.lbl3_sortBy.setEnabled(able);
-
-				GUI.this.lbl2_filteringActive
-						.setText((GUI.this.filteringActive == true ? "Filtering ON" : "Filtering OFF"));
-				if(filteringActive == false) {
-					list2_recipes.setEnabled(true);
-					testConnection();
-				}
-				btn3_filter.setEnabled(true);
-			}
-
-			// DATABASE
-			else if (source == GUI.this.btn0_settings_connect) {
-				String ip = GUI.this.txtf0_ip.getText();
-				String port = String.valueOf(GUI.this.spin0_port.getValue());
-				String user = GUI.this.txtf0_user.getText();
-				String pass = String.valueOf(GUI.this.txtf0_pass.getPassword());
-				ArrayList<String> settings = new ArrayList<>();
-				settings.add(ip);
-				settings.add(port);
-				settings.add(user);
-				settings.add(pass);
-				if (Settings.writeSettings(settings) == false)
-					Dialogs.error(
-							"The application was unable to save your preferences, and they will be forgotten when you exit.");
-				Database.setup(ip, port, user, pass, "recipe_tool");
-				try {
-					RecipeTool.prepareDatabase();
-					Dialogs.notice("Connected Successfully!");
-				} catch (Exception exception) {
-					Database.close();
-					Dialogs.error("Database setup did not succeed.\n" + exception);
-				} finally {
-					testConnection();
-				}
-			}
-
-			else if (source == GUI.this.btn0_settings_save) {
-				try {
-					RecipeTool.save();
-					Dialogs.notice("Saved Successfully!");
-				} catch (Exception exception) {
-					Database.close();
-					Dialogs.error("Saving failed!\n" + exception);
-				} finally {
-					testConnection();
-				}
-			}
-
-			else if (source == GUI.this.btn0_settings_load) {
-				try {
-					RecipeTool.load();
-					refreshLists();
-					Dialogs.notice("Loaded Successfully!");
-				} catch (Exception exception) {
-					Database.close();
-					Dialogs.error("Loading failed!\n" + exception);
-				} finally {
-					testConnection();
-				}
-			}
-
-			else if (source == GUI.this.btn0_settings_test) {
-				try {
-					RecipeTool.test();
-					refreshLists();
-					Dialogs.notice("Test Values Loaded Successfully!");
-				} catch (Exception exception) {
-					Database.close();
-					Dialogs.error("Loading failed!\n" + exception);
-				} finally {
-					testConnection();
-				}
-			}
-
-			// ADD
-			else if (source == GUI.this.btn1a_ok) {
-				String name = GUI.this.txtf1a_name.getText();
-				if (name.equals("")) {
-					Dialogs.notice("The name cannot be empty.");
-					return;
-				}
-				if (Storage.hasIngredient(name))
-					if (Dialogs.warningOC(
-							"The ingredient called " + name + " already exists. Do you want to overwrite?") == 2)
-						return;
-
-				SpinnerNumberModel temp8 = (SpinnerNumberModel) GUI.this.spin1a_amount.getModel();
-				double amount = temp8.getNumber().doubleValue();
-				Unit unit = (Unit) GUI.this.combx1a_unit.getSelectedItem();
-				TreeSet<String> allergen = new TreeSet<>();
-				String temp;
-
-				for (int i = 0; i < 10; i++) {
-					temp = (String) GUI.this.table1a_allergens.getValueAt(i, 0);
-					if (temp != null)
-						allergen.add(temp);
-				}
-				Date expiration = null;
-				expiration = (Date) GUI.this.spin1a_expiration.getValue();
-				if (GUI.this.table1a_allergens.isEditing()) {
-					CellEditor temp2 = GUI.this.table1a_allergens.getCellEditor();
-					GUI.this.table1a_allergens.getCellEditor().stopCellEditing();
-					String unfinished = (String) temp2.getCellEditorValue();
-					if (unfinished != null)
-						allergen.add(unfinished);
-				}
-				Storage.setIngredient(name, amount, unit, allergen, expiration);
-				clearFields(11);
-				refreshLists();
-
-				togglePanels(true);
-				GUI.this.iframe1_add.setVisible(false);
-			}
-
-			else if (source == GUI.this.btn2a_ok) {
-
-				String name = GUI.this.txtf2a_name.getText();
-				if (name.equals("")) {
-					Dialogs.notice("The name cannot be empty.");
-					return;
-				}
-
-				if (Book.hasRecipe(name))
-					if (Dialogs
-							.warningOC("The recipe called " + name + " already exists. Do you want to overwrite?") == 2)
-						return;
-				String instruction = GUI.this.text2a_instruction.getText();
-				LinkedHashMap<String, Double> ingredients = new LinkedHashMap<>();
-				if (GUI.this.combx2a_ingredient.getSelectedIndex() != 0)
-					ingredients.put((String) GUI.this.combx2a_ingredient.getSelectedItem(),
-							((SpinnerNumberModel) GUI.this.spin2a_amount.getModel()).getNumber().doubleValue());
-				for (int i = 1; i <= GUI.this.counter2a - 1; i++) {
-					if (GUI.this.combx2a_temp[i].getSelectedIndex() != 0)
-						ingredients.put((String) GUI.this.combx2a_temp[i].getSelectedItem(),
-								((SpinnerNumberModel) GUI.this.spin2a_temp[i].getModel()).getNumber().doubleValue());
-				}
-				if (ingredients.isEmpty()) {
-					Dialogs.notice("Cannot create a recipe with no ingredients.");
-					return;
-				}
-				Book.setRecipe(name, instruction, ingredients);
-
-				clearFields(21);
-				refreshLists();
-				togglePanels(true);
-				GUI.this.counter2a = 0;
-				GUI.this.iframe2_add.setVisible(false);
-			}
-
-			// TEMPORARY UI COMPONENTS
-			else if (source == GUI.this.btn2a_more) {
-
-				if (GUI.this.counter2a < 2)
-					GUI.this.counter2a = 1;
-				GUI.this.btn2a_less.setEnabled(true);
-
-				GUI.this.combx2a_temp[GUI.this.counter2a] = new JComboBox<>(
-						Storage.listIngredients().toArray(new String[0]));
-				GUI.this.combx2a_temp[GUI.this.counter2a].insertItemAt("Select", 0);
-				GUI.this.combx2a_temp[GUI.this.counter2a].setSelectedIndex(0);
-				GUI.this.combx2a_temp[GUI.this.counter2a].setBackground(Color.WHITE);
-				GUI.this.combx2a_temp[GUI.this.counter2a].addActionListener(GUI.this.buttonhandler);
-
-				GUI.this.iframe2_add.getContentPane().add(GUI.this.combx2a_temp[GUI.this.counter2a],
-						"growx,cell 2 " + (1 + GUI.this.counter2a));
-
-				GUI.this.spin2a_temp[GUI.this.counter2a] = new JSpinner();
-				GUI.this.spin2a_temp[GUI.this.counter2a].setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.01));
-				GUI.this.spin2a_temp[GUI.this.counter2a]
-						.setEditor(new JSpinner.NumberEditor(GUI.this.spin2a_temp[GUI.this.counter2a], "##0.0#"));
-
-				GUI.this.iframe2_add.getContentPane().add(GUI.this.spin2a_temp[GUI.this.counter2a],
-						"growx,cell 3 " + (1 + GUI.this.counter2a));
-
-				GUI.this.lbl2a_temp[GUI.this.counter2a] = new JLabel();
-				GUI.this.iframe2_add.getContentPane().add(GUI.this.lbl2a_temp[GUI.this.counter2a],
-						"growx,cell 4 " + (1 + GUI.this.counter2a));
-
-				if (GUI.this.counter2a < 10)
-					GUI.this.counter2a++;
-				if (GUI.this.counter2a == 10)
-					GUI.this.btn2a_more.setEnabled(false);
-				Dimension prefSize = GUI.this.iframe2_add.getLayout().preferredLayoutSize(GUI.this.rootPane);
-				GUI.this.iframe2_add.setPreferredSize(prefSize);
-				GUI.this.iframe2_add.revalidate();
-			}
-
-			else if (source == GUI.this.btn2a_less) {
-				GUI.this.iframe2_add.remove(GUI.this.combx2a_temp[GUI.this.counter2a - 1]);
-				GUI.this.iframe2_add.remove(GUI.this.spin2a_temp[GUI.this.counter2a - 1]);
-				GUI.this.iframe2_add.remove(GUI.this.lbl2a_temp[GUI.this.counter2a - 1]);
-				GUI.this.counter2a--;
-				if (GUI.this.counter2a < 2)
-					GUI.this.btn2a_less.setEnabled(false);
-				GUI.this.btn2a_more.setEnabled(true);
-				Dimension prefSize = GUI.this.iframe2_add.getLayout().preferredLayoutSize(GUI.this.rootPane);
-				GUI.this.iframe2_add.setPreferredSize(prefSize);
-				GUI.this.iframe2_add.revalidate();
-			}
-
-			// INTERACTIVE UNIT CHANGING
-			else if ((source == GUI.this.combx2a_ingredient)
-					&& ((GUI.this.combx2a_ingredient.getSelectedIndex() > 0))) {
-				GUI.this.lbl2a_unit
-						.setText(Storage.getUnit(GUI.this.combx2a_ingredient.getSelectedItem().toString()).toString());
-			}
-
-			else if (source instanceof JComboBox<?>) {
-				JComboBox<?> temp = (JComboBox<?>) source;
-				int j = 0;
-				for (JComboBox<String> i : GUI.this.combx2a_temp) {
-					if (temp.equals(i)) {
-						GUI.this.lbl2a_temp[j].setText(Storage.getUnit(i.getSelectedItem().toString()).toString());
-						break;
-					}
-					j++;
-				}
-			}
+			}catch(Exception exception){RecipeTool.mayday(exception);}
 		}// end method actionPerformed
 	}// end class ButtonHandler
 
 	// WINDOWHANDLER
 	/**
 	 * This class handles events for the main application window.<br>
-	 * Only the closing event is implemented, while other inherited methods are ignored.
+	 * Only the closing event is implemented, while other inherited methods are
+	 * ignored.
+	 * 
 	 * @author Ville Salmela
 	 *
 	 */
@@ -991,83 +1223,116 @@ class GUI extends JFrame { // package-private
 		 */
 		@Override
 		public void windowClosing(WindowEvent e) {
-			int answer = Dialogs.choiceYNC("You are exiting the application. Do you want to save changes to database?");
-			switch (answer) {
+			try {
+				int answer = Dialogs.choiceYNC("You are exiting the application. Do you want to save changes to database?");
+				switch (answer) {
 
-			case 0: // yes
-				try {
-					RecipeTool.save();
-				} catch (Exception e1) {
-					Database.close();
-					if (Dialogs.warningYN("Saving failed. Do you still want to exit?\n" + e1) == 1)
-						return;
-					else
-						System.exit(0);
-				} finally {
-					testConnection();
+				case 0: // yes
+					try {
+						RecipeTool.save();
+					} catch (Exception e1) {
+						Database.close();
+						if (Dialogs.warningYN("Saving failed. Do you still want to exit?\n" + e1) == 1)
+							return;
+						else
+							System.exit(0);
+					} finally {
+						testConnection();
+					}
+					System.exit(0);
+					break;
+
+				case 1: // no
+					System.exit(0);
+					break;
+
+				case 2: // cancel
+					return;
+				default: // this should not happen
+					throw new IllegalArgumentException();
 				}
-				System.exit(0);
-				break;
-
-			case 1: // no
-				System.exit(0);
-				break;
-
-			case 2: // cancel
-				return;
-			default: // this should not happen
-				throw new IllegalArgumentException();
+			} catch (Exception e1) {
+				System.exit(1);
 			}
 		}// end method windowClosing
 
+		/**
+		 * This method is inherited from superclass, but is not used in this
+		 * implementation.
+		 */
 		@Override
 		public void windowOpened(WindowEvent e) {
-			/* not used */}
+		}
 
+		/**
+		 * This method is inherited from superclass, but is not used in this
+		 * implementation.
+		 */
 		@Override
 		public void windowClosed(WindowEvent e) {
-			/* not used */}
+		}
 
+		/**
+		 * This method is inherited from superclass, but is not used in this
+		 * implementation.
+		 */
 		@Override
 		public void windowIconified(WindowEvent e) {
-			/* not used */}
+		}
 
+		/**
+		 * This method is inherited from superclass, but is not used in this
+		 * implementation.
+		 */
 		@Override
 		public void windowDeiconified(WindowEvent e) {
-			/* not used */}
+		}
 
+		/**
+		 * This method is inherited from superclass, but is not used in this
+		 * implementation.
+		 */
 		@Override
 		public void windowActivated(WindowEvent e) {
-			/* not used */}
+		}
 
+		/**
+		 * This method is inherited from superclass, but is not used in this
+		 * implementation.
+		 */
 		@Override
 		public void windowDeactivated(WindowEvent e) {
-			/* not used */}
+		}
 	}// end class WindowHandler
 
 	/**
 	 * This class handles events for JTextAreas.
+	 * 
 	 * @author Ville Salmela
 	 *
 	 */
 	private class TextHandler extends ComponentAdapter {
-		
+
 		/**
-		 * This method runs, when a connected JTextArea resizes.
-		 * It will then also resize the parent JInternalFrame, so that there is
-		 * neither too much nor little space.
+		 * This method runs, when a connected JTextArea resizes. It will then
+		 * also resize the parent JInternalFrame, so that there is neither too
+		 * much nor little space.
 		 */
 		@Override
 		public void componentResized(ComponentEvent e) {
-			JTextArea t = ((JTextArea) e.getSource());
-			if (t.getText().equals(""))
-				return;
+			try {
+				JTextArea t = ((JTextArea) e.getSource());
+				if (t.getText().equals(""))
+					return;
 
-			JInternalFrame c = (JInternalFrame) t.getParent().getParent().getParent().getParent();
-			Dimension prefSize = c.getLayout().preferredLayoutSize(GUI.this.rootPane);
-			c.setPreferredSize(prefSize);
-			c.revalidate();
+				JInternalFrame c = (JInternalFrame) t.getParent().getParent().getParent().getParent();
+				Dimension prefSize = c.getLayout().preferredLayoutSize(rootPane);
+				c.setPreferredSize(prefSize);
+				c.revalidate();
+			} catch (Exception exception) {
+				RecipeTool.mayday(exception);
+			}
 
-		}//end method componentResized
+		}// end method componentResized
 	}// end class TextHandler
 }// end class GUI

@@ -15,11 +15,16 @@ import javax.swing.JOptionPane;
  */
 public class Dialogs {
 
+	/**
+	 * This constructor is private, thus preventing the instantiation of this class.
+	 */
+	private Dialogs(){}
+	
 	//NOTICE	
 	/**
 	 * Information message -dialog, with title: Notice
 	 * @param message The message.
-	 * @return Nothing.
+	 
 	 */
 	public static void notice(String message){
 		JOptionPane.showMessageDialog(null, message, "Notice", JOptionPane.INFORMATION_MESSAGE);
@@ -29,7 +34,7 @@ public class Dialogs {
 	/**
 	 * Error message -dialog, with title: Error
 	 * @param message The message.
-	 * @return Nothing.
+	 
 	 */
 	public static void error(String message){
 		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
