@@ -1,6 +1,13 @@
 package recipeTool;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.TreeSet;
+
+import utilities.InvalidDataException;
+import utilities.Unit;
 
 /**
  * This class contains all the ingredients. It stores the
@@ -47,7 +54,7 @@ class Storage { // package-private
 	 *            The amount of the ingredient in storage. Cannot be negative.
 	 * @param unit
 	 *            The unit of the ingredient. Cannot be {@code null}. See
-	 *            {@link recipeTool.Unit}
+	 *            {@link utilities.Unit}
 	 * @param allergen
 	 *            The allergens of the ingredient, or {@code null} if there are none. The values will be sorted
 	 *            alphabetically.
@@ -83,6 +90,27 @@ class Storage { // package-private
 	public static void clear(){
 		map.clear();
 	}
+	
+	/**
+	 * This method will reduce the amount of one ingredient.
+	 * @param iname Ingredient name.
+	 * @param amount The amount to be reduced.
+	 * @throws NoSuchElementException
+	 *             if the ingredient {@code iname} does not exist
+	 *             in storage.
+	 * @throws IllegalArgumentException
+	 *             if {@code iname} is {@code null}/empty, or if reducing would lead to negative amount.
+	 */
+	public static void reduce(String iname, double amount){
+		if (iname == null || iname.equals(""))
+			throw new IllegalArgumentException();
+		if (hasIngredient(iname) == false)
+			throw new NoSuchElementException();
+		Object[] temp = map.get(iname);
+		if (amount > (double)temp[3]) throw new IllegalArgumentException();
+		temp[3] = (double)temp[3]-amount;
+		map.put(iname, temp);
+	}
 
 	/**
 	 * This method will remove one ingredient from storage.
@@ -111,7 +139,7 @@ class Storage { // package-private
 	 * 
 	 * @param name
 	 *            The name of the ingredient. Cannot be {@code null} or empty
-	 * @return Unit enumerable, never {@code null}. See {@link recipeTool.Unit}
+	 * @return Unit enumerable, never {@code null}. See {@link utilities.Unit}
 	 * @throws NoSuchElementException
 	 *             if the ingredient with attribute {@code name} does not exist
 	 *             in storage.

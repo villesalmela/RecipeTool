@@ -1,24 +1,22 @@
 /*
 TODO:
 Improve:
-	Coherent and uniform type settings
 	Descriptive commenting
 	Consistent naming of methods, variables, objects and classes
 	Error handling
 	
 Fix:
-	Overgrowing columns and rows
+	Expanding columns and rows
+	When empty:
+		get returns: null
+		list returns: empty list
+	GUI lots of methods
 	
-New features:
-	Preparing recipe automatically reduces storage values.
+New feature:
+	Serialization to MariaDB and File
 */
 package recipeTool;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TreeSet;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -29,12 +27,23 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.TreeSet;
+
+import utilities.Database;
+import utilities.Dialogs;
+import utilities.InvalidDataException;
+import utilities.Settings;
+import utilities.Unit;
 
 /**
  * This class is the starting point for application RecipeTool.<br>
- * The class also contains methods, which interact with the database.
+ * The class also contains methods, which transforms data from database compatible format into internal data structure, and vice versa.
  * 
- * @author ville
+ * @author Ville Salmela
  *
  */
 public class RecipeTool {
@@ -74,7 +83,7 @@ public class RecipeTool {
 
 	/**
 	 * This method will try to load existing settings using
-	 * {@link recipeTool.Settings#readSettings()},<br>
+	 * {@link utilities.Settings#readSettings()},<br>
 	 * failing that it will use default values as connection parameters:<br>
 	 * ip: localhost<br>
 	 * port: 3306<br>
@@ -114,7 +123,7 @@ public class RecipeTool {
 	/**
 	 * This method will save data from {@link recipeTool.Book} and
 	 * {@link recipeTool.Storage} to a SQL database using
-	 * {@link recipeTool.Database}.
+	 * {@link utilities.Database}.
 	 * 
 	 * @throws SQLException
 	 *             if there is a database error.
@@ -172,7 +181,7 @@ public class RecipeTool {
 
 	/**
 	 * This method will load data from SQL database using
-	 * {@link recipeTool.Database}, and copy it to the
+	 * {@link utilities.Database}, and copy it to the
 	 * {@link recipeTool.Storage} and {@link recipeTool.Book}.
 	 * 
 	 * @throws SQLException

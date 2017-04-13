@@ -1,6 +1,19 @@
 package recipeTool;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.TreeSet;
+
+import utilities.InvalidDataException;
 
 /**
  * This class contains all the recipes. It stores the following information:<br>
@@ -41,7 +54,7 @@ class Book { // package-private
 	}
 
 	/**
-	 * This is a convenience method, which returns a map containing ingredients
+	 * This is a private method, which returns a map containing ingredients
 	 * and their amounts, for one recipe.<br>
 	 * The method just retrieves the second object from object array, which is
 	 * mapped to a recipe in {@link recipeTool.Book#map}
@@ -93,7 +106,7 @@ class Book { // package-private
 			if (Storage.hasIngredient(iname) == false) throw new InvalidDataException("Ingredient is unknown.");
 
 			if (ingredient.get(iname) == null || ingredient.get(iname) < 0)
-				throw new InvalidDataException("Ingredient amount cannot be negative.");
+				throw new InvalidDataException("Ingredient amount cannot be null or negative.");
 		}
 
 		// Set properties
@@ -280,7 +293,7 @@ class Book { // package-private
 	 * @throws IllegalArgumentException
 	 *             if {@code rname} is {@code null}/empty.
 	 */
-	public static boolean getEnough(String rname) {
+	public static boolean isEnough(String rname) {
 		if (rname == null || rname.equals(""))
 			throw new IllegalArgumentException();
 		if (hasRecipe(rname) == false)

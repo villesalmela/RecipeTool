@@ -1,5 +1,26 @@
 package recipeTool;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.TreeSet;
+
 import javax.swing.AbstractButton;
 import javax.swing.CellEditor;
 import javax.swing.ImageIcon;
@@ -21,37 +42,21 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.JTextComponent;
 
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.TreeSet;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SpinnerDateModel;
-
-import java.util.Calendar;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.LineBorder;
 import net.miginfocom.swing.MigLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import utilities.Database;
+import utilities.DatabaseCommand;
+import utilities.Dialogs;
+import utilities.Settings;
+import utilities.Unit;
 
 /**
  * This class holds the Graphical User Interface.
@@ -72,8 +77,8 @@ class GUI extends JFrame { // package-private
 	private final JPanel panel_2 = new JPanel();
 	private final JPanel panel_3 = new JPanel();
 	private final JPanel panel_4 = new JPanel();
-	private final JInternalFrame iframe1_add = new JInternalFrame("Add Ingredient");
-	private final JInternalFrame iframe2_add = new JInternalFrame("Add recipe");
+	private final JInternalFrame iframe1_add = new JInternalFrame();
+	private final JInternalFrame iframe2_add = new JInternalFrame();
 	private final JInternalFrame iframe0_settings = new JInternalFrame("Settings");
 
 	private final java.awt.Container[] containerArrayAll;
@@ -98,8 +103,10 @@ class GUI extends JFrame { // package-private
 	private final JTextArea text2a_instruction = new JTextArea();
 
 	// ICONS
-	private final ImageIcon connected = new ImageIcon(GUI.class.getResource("/recipeTool/images/connected.png"));
-	private final ImageIcon disconnected = new ImageIcon(GUI.class.getResource("/recipeTool/images/disconnected.png"));
+	private final ImageIcon icon_connected = new ImageIcon(GUI.class.getResource("/recipeTool/images/icon_connected.png"));
+	private final ImageIcon icon_disconnected = new ImageIcon(GUI.class.getResource("/recipeTool/images/icon_disconnected.png"));
+	private final ImageIcon icon_cart = new ImageIcon(GUI.class.getResource("/recipeTool/images/icon_cart.png"));
+	private final ImageIcon icon_cutlery = new ImageIcon(GUI.class.getResource("/recipeTool/images/icon_cutlery.png"));
 
 	// LABELS
 	private final JLabel lbl1_amount = new JLabel("Amount");
@@ -115,7 +122,7 @@ class GUI extends JFrame { // package-private
 	private final JLabel lbl2_insturctions = new JLabel("Insturctions");
 	private final JLabel lbl2_allergens = new JLabel("Allergens");
 	private final JLabel lbl2_expiration = new JLabel("Expiration");
-	private final JLabel lbl2_enough = new JLabel("Enough");
+	private final JLabel lbl2_enough = new JLabel("");
 	private final JLabel lbl2_enoughValue = new JLabel("");
 	private final JLabel lbl2_filteringActive = new JLabel("Filtering OFF");
 	private final JLabel lbl2a_name = new JLabel("Name");
@@ -139,6 +146,7 @@ class GUI extends JFrame { // package-private
 	private final JButton btn2_add = new JButton("Add recipe");
 	private final JButton btn2_delete = new JButton("Delete recipe");
 	private final JButton btn2_modify = new JButton("Modify recipe");
+	private final JButton btn2_prepare = new JButton("Prepare recipe");
 	private final JButton btn1a_ok = new JButton("Add to Storage");
 	private final JButton btn1a_cancel = new JButton("Cancel");
 	private final JButton btn2a_ok = new JButton("Add to Book");
@@ -188,16 +196,16 @@ class GUI extends JFrame { // package-private
 	private final JLabel[] lbl2a_temp = new JLabel[10];
 
 	// STATE
-	private boolean filteringActive = false;
+	private boolean state_filteringActive = false;
 
 	// COUNTER
-	private int counter2a = 0;
+	private int state_counter2a = 0;
 
 	// HANDLERS
-	private final ButtonHandler buttonhandler = new ButtonHandler();
-	private final ListHandler listhandler = new ListHandler();
-	private final WindowHandler windowhandler = new WindowHandler();
-	private final TextHandler texthandler = new TextHandler();
+	private final ButtonHandler handler_button = new ButtonHandler();
+	private final ListHandler handler_list = new ListHandler();
+	private final WindowHandler handler_window = new WindowHandler();
+	private final TextHandler handler_text = new TextHandler();
 
 	// CONSTRUCTOR
 	// **************************************************************************************************************************
@@ -323,9 +331,10 @@ class GUI extends JFrame { // package-private
 		c.add(text2_allergens);
 		c.add(text2_expiration, "wrap");
 		c.add(list2_recipes, "grow,spany 5,wrap");
-		c.add(btn2_add, "split 3");
+		c.add(btn2_add, "split 4");
 		c.add(btn2_delete);
-		c.add(btn2_modify, "wrap");
+		c.add(btn2_modify);
+		c.add(btn2_prepare, "wrap");
 
 		c = panel_3;
 		c.setLayout(new MigLayout("flowy,insets panel", "[50%,fill]", "[25%,fill|25%,fill|||]"));
@@ -347,7 +356,7 @@ class GUI extends JFrame { // package-private
 	private void config() {
 
 		// ROOT
-		addWindowListener(windowhandler);
+		addWindowListener(handler_window);
 		setResizable(false);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setBounds(0, 0, 1200, 800);
@@ -388,16 +397,16 @@ class GUI extends JFrame { // package-private
 		list3_avoidAllergens.setBorder(new TitledBorder(null, "Avoid allergens", TitledBorder.LEADING,
 				TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 18), null));
 
-		list1_ingredients.addListSelectionListener(listhandler);
-		list2_recipes.addListSelectionListener(listhandler);
+		list1_ingredients.addListSelectionListener(handler_list);
+		list2_recipes.addListSelectionListener(handler_list);
 
 		// BUTTONS
 		for (java.awt.Container c : containerArrayAll) {
 			for (Component c2 : c.getComponents()) {
 				if (c2 instanceof AbstractButton)
-					((AbstractButton) c2).addActionListener(buttonhandler);
+					((AbstractButton) c2).addActionListener(handler_button);
 				else if (c2 instanceof JComboBox)
-					((JComboBox<?>) c2).addActionListener(buttonhandler);
+					((JComboBox<?>) c2).addActionListener(handler_button);
 			}
 		}
 
@@ -426,7 +435,7 @@ class GUI extends JFrame { // package-private
 		for (Container c : containerArrayIframes) {
 			for (Component c2 : c.getComponents()) {
 				if (c2 instanceof JTextArea) {
-					((JTextArea) c2).addComponentListener(texthandler);
+					((JTextArea) c2).addComponentListener(handler_text);
 					((JTextArea) c2).setEditable(true);
 				}
 			}
@@ -470,13 +479,13 @@ class GUI extends JFrame { // package-private
 				c2.setEnabled(enable);
 			}
 		}
+		testConnection();
 	}// end method togglePanels
 
 	// TEST CONNECTION
 	/**
-	 * This method will test if there is a valid connection established to a
-	 * database,<br>
-	 * using {@link recipeTool.Database#isConnected()}
+	 * This method will test if there is a valid connection established to a database.<br>
+	 * The method does the checking using {@link utilities.Database#isConnected()}
 	 * <p>
 	 * Connection Icon is set accordingly, and save/load buttons enabled or
 	 * disabled.
@@ -488,7 +497,7 @@ class GUI extends JFrame { // package-private
 		btn0_settings_load.setEnabled(established);
 		btn0_settings_save.setEnabled(established);
 		btn0_settings_test.setEnabled(established);
-		lbl_connection.setIcon(established == true ? connected : disconnected);
+		lbl_connection.setIcon(established ? icon_connected : icon_disconnected);
 	}
 
 	// CLEAR FIELDS
@@ -509,6 +518,7 @@ class GUI extends JFrame { // package-private
 	
 			case 2: // recipes tab
 				container = panel_2;
+				lbl2_enough.setIcon(null);
 				lbl2_enoughValue.setText("");
 				break;
 	
@@ -565,7 +575,7 @@ class GUI extends JFrame { // package-private
 			}
 	
 			// if container is internal frame, then reset the size
-			if (z == 0 || z == 11 || z == 12 || z == 21){
+			if (z == 0 || z == 11 || z == 21){
 				Container iframe = container.getParent().getParent().getParent();
 				prefSize = iframe.getLayout().preferredLayoutSize(rootPane);
 				iframe.setPreferredSize(prefSize);
@@ -631,7 +641,8 @@ class GUI extends JFrame { // package-private
 								.setText(String.join("", DateFormat.getDateInstance().format(Book.getExpiration(rname)[0]), " ",
 										(String) Book.getExpiration(rname)[1]));
 		
-					lbl2_enoughValue.setText(Boolean.toString(Book.getEnough(rname)));
+					lbl2_enoughValue.setText(Book.isEnough(rname) ? "Ready to cook" : "Go Shopping");
+					lbl2_enough.setIcon(Book.isEnough(rname) ? icon_cutlery : icon_cart);
 				}
 				break;
 				
@@ -694,7 +705,7 @@ class GUI extends JFrame { // package-private
 				list1_ingredients.setListData(Storage.listIngredients().toArray(new String[0]));
 				break;
 			case 2:
-				if (filteringActive){
+				if (state_filteringActive){
 					List<String> mustHave = list3_mustHave.getSelectedValuesList();
 					List<String> avoidAllergens = list3_avoidAllergens.getSelectedValuesList();
 					boolean enough = chckbx3_noShopping.isSelected();
@@ -717,7 +728,7 @@ class GUI extends JFrame { // package-private
 				combx2a_ingredient.setSelectedIndex(0);
 				break;
 			case 3:
-				if (filteringActive == false) {
+				if (state_filteringActive == false) {
 					list3_mustHave.setListData(Storage.listIngredients().toArray(new String[0]));
 					list3_avoidAllergens.setListData(Storage.listAllergens().toArray(new String[0]));
 				}
@@ -767,7 +778,7 @@ class GUI extends JFrame { // package-private
 				Storage.deleteIngredient(original);
 			}
 		} catch (Exception exception) {
-			Dialogs.notice(exception.getMessage());
+			Dialogs.notice(exception.toString());
 			return;
 		}
 		clearFields(1,2,11);
@@ -784,7 +795,7 @@ class GUI extends JFrame { // package-private
 		if (combx2a_ingredient.getSelectedIndex() != 0)
 			ingredients.put((String) combx2a_ingredient.getSelectedItem(),
 					((SpinnerNumberModel) spin2a_amount.getModel()).getNumber().doubleValue());
-		for (int i = 1; i <= counter2a - 1; i++) {
+		for (int i = 1; i <= state_counter2a - 1; i++) {
 			if (combx2a_temp[i].getSelectedIndex() != 0)
 				ingredients.put((String) combx2a_temp[i].getSelectedItem(),
 						((SpinnerNumberModel) spin2a_temp[i].getModel()).getNumber().doubleValue());
@@ -801,14 +812,14 @@ class GUI extends JFrame { // package-private
 			Book.setRecipe(name, instruction, ingredients);
 			if (name.equals(list2_recipes.getSelectedValue()) == false) Book.deleteRecipe(list2_recipes.getSelectedValue());
 		} catch (Exception exception) {
-			Dialogs.notice(exception.getMessage());
+			Dialogs.notice(exception.toString());
 			return;
 		}
 
 		clearFields(2,21);
 		refreshLists(2);
 		togglePanels(true);
-		counter2a = 0;
+		state_counter2a = 0;
 		iframe2_add.setVisible(false);
 	}// end method addRecipe
 	
@@ -849,44 +860,48 @@ class GUI extends JFrame { // package-private
 
 
 	
+	/**
+	 * This method will add/remove input rows in {@link recipeTool.GUI#iframe2_add}
+	 * @param value number if rows to be added(+) or removed(-).
+	 */
 	private void rows(int value){
 		if (value == 0) return;
 		for (int z = Math.abs(value); z >= 1; z--){
 			if (value > 0) {
-				if (counter2a < 2)
-					counter2a = 1;
+				if (state_counter2a < 2)
+					state_counter2a = 1;
 				btn2a_less.setEnabled(true);
-				combx2a_temp[counter2a] = new JComboBox<>(
+				combx2a_temp[state_counter2a] = new JComboBox<>(
 						Storage.listIngredients().toArray(new String[0]));
-				combx2a_temp[counter2a].insertItemAt("Select", 0);
-				combx2a_temp[counter2a].setSelectedIndex(0);
-				combx2a_temp[counter2a].setBackground(Color.WHITE);
-				combx2a_temp[counter2a].addActionListener(buttonhandler);
-				iframe2_add.getContentPane().add(combx2a_temp[counter2a],
-						"growx,cell 2 " + (1 + counter2a));
-				spin2a_temp[counter2a] = new JSpinner();
-				spin2a_temp[counter2a].setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.01));
-				spin2a_temp[counter2a]
-						.setEditor(new JSpinner.NumberEditor(spin2a_temp[counter2a], "##0.0#"));
-				iframe2_add.getContentPane().add(spin2a_temp[counter2a],
-						"growx,cell 3 " + (1 + counter2a));
-				lbl2a_temp[counter2a] = new JLabel();
-				iframe2_add.getContentPane().add(lbl2a_temp[counter2a],
-						"growx,cell 4 " + (1 + counter2a));
-				if (counter2a < 10)
-					counter2a++;
-				if (counter2a == 10)
+				combx2a_temp[state_counter2a].insertItemAt("Select", 0);
+				combx2a_temp[state_counter2a].setSelectedIndex(0);
+				combx2a_temp[state_counter2a].setBackground(Color.WHITE);
+				combx2a_temp[state_counter2a].addActionListener(handler_button);
+				iframe2_add.getContentPane().add(combx2a_temp[state_counter2a],
+						"growx,cell 2 " + (1 + state_counter2a));
+				spin2a_temp[state_counter2a] = new JSpinner();
+				spin2a_temp[state_counter2a].setModel(new SpinnerNumberModel(0.0, 0.0, 100.0, 0.01));
+				spin2a_temp[state_counter2a]
+						.setEditor(new JSpinner.NumberEditor(spin2a_temp[state_counter2a], "##0.0#"));
+				iframe2_add.getContentPane().add(spin2a_temp[state_counter2a],
+						"growx,cell 3 " + (1 + state_counter2a));
+				lbl2a_temp[state_counter2a] = new JLabel();
+				iframe2_add.getContentPane().add(lbl2a_temp[state_counter2a],
+						"growx,cell 4 " + (1 + state_counter2a));
+				if (state_counter2a < 10)
+					state_counter2a++;
+				if (state_counter2a == 10)
 					btn2a_more.setEnabled(false);
 				Dimension prefSize = iframe2_add.getLayout().preferredLayoutSize(rootPane);
 				iframe2_add.setPreferredSize(prefSize);
 				iframe2_add.revalidate();
 			}
 			if (value < 0) {
-				iframe2_add.remove(combx2a_temp[counter2a - 1]);
-				iframe2_add.remove(spin2a_temp[counter2a - 1]);
-				iframe2_add.remove(lbl2a_temp[counter2a - 1]);
-				counter2a--;
-				if (counter2a < 2)
+				iframe2_add.remove(combx2a_temp[state_counter2a - 1]);
+				iframe2_add.remove(spin2a_temp[state_counter2a - 1]);
+				iframe2_add.remove(lbl2a_temp[state_counter2a - 1]);
+				state_counter2a--;
+				if (state_counter2a < 2)
 					btn2a_less.setEnabled(false);
 				btn2a_more.setEnabled(true);
 				Dimension prefSize = iframe2_add.getLayout().preferredLayoutSize(rootPane);
@@ -896,7 +911,14 @@ class GUI extends JFrame { // package-private
 		}
 	}// end method rows
 	
-	private void maria(DB command){
+	/**
+	 * This method will handle connecting, saving, loading and test values.<br>
+	 * When user click a button, this method will receive a command from {@link recipeTool.GUI.ButtonHandler},
+	 * gather inputed data from UI, pass the information onto {@link recipeTool.RecipeTool}, and finally present the user with
+	 * information of success or failure.
+	 * @param command a DatabaseCommand
+	 */
+	private void maria(DatabaseCommand command){
 		switch(command){
 		case CONNECT:
 			String ip = txtf0_ip.getText();
@@ -985,7 +1007,7 @@ class GUI extends JFrame { // package-private
 
 		/**
 		 * This method will run, when an item selection is changed. The method
-		 * will invoke {@link recipeTool.GUI#refreshFields()}
+		 * will invoke {@link recipeTool.GUI#refreshFields(int...)}
 		 */
 		@Override
 		public void valueChanged(ListSelectionEvent event) {
@@ -1048,19 +1070,19 @@ class GUI extends JFrame { // package-private
 				
 				// DATABASE
 				else if (source == btn0_settings_connect) {
-					maria(DB.CONNECT);
+					maria(DatabaseCommand.CONNECT);
 				}
 	
 				else if (source == btn0_settings_save) {
-					maria(DB.SAVE);
+					maria(DatabaseCommand.SAVE);
 				}
 	
 				else if (source == btn0_settings_load) {
-					maria(DB.LOAD);
+					maria(DatabaseCommand.LOAD);
 				}
 	
 				else if (source == btn0_settings_test) {
-					maria(DB.TEST);
+					maria(DatabaseCommand.TEST);
 				}
 				
 				// RADIO BUTTONS
@@ -1082,7 +1104,7 @@ class GUI extends JFrame { // package-private
 				else if (source == btn2a_cancel) {
 					iframe2_add.setVisible(false);
 					clearFields(21);
-					counter2a = 0;
+					state_counter2a = 0;
 					togglePanels(true);
 				}
 	
@@ -1140,24 +1162,55 @@ class GUI extends JFrame { // package-private
 					refreshFields(22);
 					
 					togglePanels(false);
-					btn2a_less.setEnabled(false);
+					if (Book.listIngredients(rname).size() <= 1) btn2a_less.setEnabled(false);
 					iframe2_add.setVisible(true);
+				}
+				
+				else if (source == btn2_prepare) {
+					String rname = list2_recipes.getSelectedValue();
+					
+					if (rname == null) {
+						Dialogs.notice("You must first select a recipe.");
+						return;
+					}
+					
+					if (Book.isEnough(rname) == false) {
+						Dialogs.notice("Cannot prepare this recipe, there is not enough ingredients in storage.");
+						return;
+					}
+					
+					if (Dialogs.choiceOC("You are preparing a recipe, the amounts in storage will be adjusted automatically. Proceed?") == 2) return;
+					for (String iname : Book.listIngredients(rname)){
+						Storage.reduce(iname, Book.getAmount(rname, iname));
+					}
+					Dialogs.notice("Storage values adjusted. Bon appétit!");
+					clearFields(1);
+					
 				}
 	
 				else if (source == btn0_settings_open) {
 					togglePanels(false);
 					testConnection();
+					String[] temp = Database.getParameters();
+					txtf0_ip.setText(temp[0]);
+					try {
+						spin0_port.setValue(Integer.valueOf(temp[1]));
+					} catch (Exception exception) {
+						spin0_port.setValue(0);
+					}
+					txtf0_user.setText(temp[2]);
+					txtf0_pass.setText(temp[3]);
 					btn0_settings_open.setEnabled(false);
 					iframe0_settings.setVisible(true);
 				}
 	
 				// FILTER
 				else if (source == btn3_filter) {
-					filteringActive = (filteringActive == true ? false : true);
+					state_filteringActive = (state_filteringActive ? false : true);
 	
 					clearFields(2);
 					refreshLists(2);
-					boolean able = !filteringActive;
+					boolean able = !state_filteringActive;
 	
 					for (Container c : containerArrayPanels) {
 						for (Component c2 : c.getComponents()) {
@@ -1171,8 +1224,8 @@ class GUI extends JFrame { // package-private
 					lbl3_sortBy.setEnabled(able);
 	
 					lbl2_filteringActive
-							.setText((filteringActive == true ? "Filtering ON" : "Filtering OFF"));
-					if (filteringActive == false) {
+							.setText((state_filteringActive ? "Filtering ON" : "Filtering OFF"));
+					if (state_filteringActive == false) {
 						list2_recipes.setEnabled(true);
 						testConnection();
 					}
@@ -1314,7 +1367,7 @@ class GUI extends JFrame { // package-private
 	private class TextHandler extends ComponentAdapter {
 
 		/**
-		 * This method runs, when a connected JTextArea resizes. It will then
+		 * This method runs, when a icon_connected JTextArea resizes. It will then
 		 * also resize the parent JInternalFrame, so that there is neither too
 		 * much nor little space.
 		 */
