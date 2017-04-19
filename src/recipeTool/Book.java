@@ -568,8 +568,10 @@ final class Book implements java.io.Serializable {
 				
 				// If it does have any allergen in avoidAllergens, remove it from list
 				for (String allergen : avoidAllergens) {
-					if (getAllergens(rname).contains(allergen))
-						temp.remove(rname);
+					if ((allergen != null) && (getAllergens(rname) != null)) {
+						if (getAllergens(rname).contains(allergen))
+							temp.remove(rname);
+					}
 				}
 			}
 			
