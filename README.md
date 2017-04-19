@@ -9,7 +9,7 @@ JavaDoc can be found at:
 https://villesalmela.github.io/recipeTool/
 
 <b>Installation</b>
-1. Install MariaDB or MySQL (optional)<br>
+1. Install MariaDB or MySQL (optional step)<br>
 	-download http://downloads.mariadb.com/MariaDB/mariadb-10.1.22/winx64-packages/mariadb-10.1.22-winx64.msi<br>
 	-execute installer<br>
 	-hit next until you can't do it anymore<br>
