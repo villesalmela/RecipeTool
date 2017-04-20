@@ -885,7 +885,7 @@ class GUI extends JFrame { // package-private
 				String[] temp2 = Settings.readSettings();
 				
 				// If the reading was successful
-				if (temp2 != null) {
+				if ((temp2 != null) && (temp2.length >= 5)) {
 					
 					// Fill IP
 					txtf0_ip.setText(temp2[0]);

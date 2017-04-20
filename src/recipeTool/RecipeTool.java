@@ -169,7 +169,7 @@ public class RecipeTool {
 
 		// If reading succeeded or got manual values, setup the database using
 		// those settings
-		if (settings != null)
+		if ((settings != null) && (settings.length >= 5))
 			Database.setup(settings[0], settings[1], settings[2], settings[3], "recipe_tool");
 
 		// If reading failed, use default settings for setup
